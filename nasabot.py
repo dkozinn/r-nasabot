@@ -13,8 +13,6 @@ REPLY_TEMPLATE= ("If you're visiting here perhaps for the first time from /r/all
                 " before posting, and we hope you'll stick around for a while.")
 FLAIR_TEMPLATE_ID="b37f60b8-74ac-11eb-9178-0e509773c193"
 
-processed=[]        #Remember which submissions have already been processed
-
 def main():
     reddit = praw.Reddit("nasabot")
     if strtobool(reddit.config.custom["app_debugging"]):
@@ -27,10 +25,8 @@ def main():
             logger.addHandler(handler)
 
     for submission in reddit.subreddit('TOY').hot(limit=1):
-        if submission.id in processed:
-            pass
-        else:
-            processed.append(submission.id)
+        if (not hasattr(submission,'link_flair_template_id') or
+         (hasattr(submission,'link_flair_template_id') and submission.link_flair_template_id != FLAIR_TEMPLATE_ID)):
             process_submission(submission)
 
 def process_submission(submission):
@@ -39,7 +35,6 @@ def process_submission(submission):
         submission.mod.flair(flair_template_id=FLAIR_TEMPLATE_ID)
         comment=submission.reply(REPLY_TEMPLATE)
         comment.mod.distinguish(how="yes",sticky=True)
-# TODO Store submissions that have already been processed -- probably use a list
 
 if __name__ == "__main__":
     main()
