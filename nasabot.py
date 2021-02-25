@@ -1,17 +1,18 @@
 #!/usr/bin/python3
 
 from distutils.util import strtobool
+from re import sub
 import sys
 import logging
 
 import praw
 
-SUB="TOY"
+SUB="nasa"
 REPLY_TEMPLATE= ("If you're visiting here perhaps for the first time from /r/all, "
                 "welcome to /r/nasa! Please take a moment to "
                 "[read our welcome post](https://www.reddit.com/r/nasa/comments/l43hoq/welcome_to_rnasa_please_read_this_post_for/)"
                 " before posting, and we hope you'll stick around for a while.")
-FLAIR_TEMPLATE_ID="b37f60b8-74ac-11eb-9178-0e509773c193"
+FLAIR_TEMPLATE_ID="7216c708-7c40-11e4-b13d-12313d052165"
 
 def main():
     reddit = praw.Reddit("nasabot")
@@ -24,17 +25,21 @@ def main():
             logger.setLevel(logging.DEBUG)
             logger.addHandler(handler)
 
-    for submission in reddit.subreddit('TOY').hot(limit=1):
-        if (not hasattr(submission,'link_flair_template_id') or
-         (hasattr(submission,'link_flair_template_id') and submission.link_flair_template_id != FLAIR_TEMPLATE_ID)):
+# Iterate through submissions, process if it's the right subreddit and it either has no flair or it has flair not matching the template
+
+    for submission in reddit.subreddit('all').hot(limit=250):
+        logging.info("Post in /r/"+str(submission.subreddit)+":"+submission.title+"/"+submission.id)
+        if (submission.subreddit == SUB 
+                and ((not hasattr(submission,'link_flair_template_id') 
+                or  (hasattr(submission,'link_flair_template_id') 
+                    and submission.link_flair_template_id != FLAIR_TEMPLATE_ID)))):
             process_submission(submission)
 
 def process_submission(submission):
-    if submission.subreddit == SUB:
-        logging.info("Replying in /r/"+str(submission.subreddit)+" to "+submission.title+" from "+str(submission.author)+" with ID "+submission.id)
-        submission.mod.flair(flair_template_id=FLAIR_TEMPLATE_ID)
-        comment=submission.reply(REPLY_TEMPLATE)
-        comment.mod.distinguish(how="yes",sticky=True)
+    logging.info("Replying in /r/"+str(submission.subreddit)+":"+submission.title+"/"+str(submission.author)+"/"+submission.id)
+    submission.mod.flair(flair_template_id=FLAIR_TEMPLATE_ID,text="/r/all")
+    comment=submission.reply(REPLY_TEMPLATE)
+    comment.mod.distinguish(how="yes",sticky=True)
 
 if __name__ == "__main__":
     main()
