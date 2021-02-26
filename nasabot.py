@@ -17,14 +17,14 @@ FLAIR_TEMPLATE_ID="7216c708-7c40-11e4-b13d-12313d052165"
 
 def main():
     reddit = praw.Reddit("nasabot")
-    if strtobool(reddit.config.custom["app_debugging"]):
-        logging.basicConfig(level=logging.INFO)
-        handler = logging.StreamHandler()
-        handler.setLevel(logging.DEBUG)
-        for logger_name in ("praw", "prawcore"):
-            logger = logging.getLogger(logger_name)
-            logger.setLevel(logging.DEBUG)
-            logger.addHandler(handler)
+    debug_level = reddit.config.custom['app_debugging'].upper()
+    logging.basicConfig(level=debug_level)
+    handler = logging.StreamHandler()
+    handler.setLevel(debug_level)
+    for logger_name in ("praw", "prawcore"):
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(debug_level)
+        logger.addHandler(handler)
 
 # Iterate through submissions, process if it's the right subreddit and it either has no flair or it has flair not matching the template
 
