@@ -9,7 +9,6 @@ import requests
 import praw
 
 SUB="nasa"
-
 REPLY_TEMPLATE= ("If you're visiting here perhaps for the first time from /r/all, "
                 "welcome to /r/nasa! Please take a moment to "
                 "[read our welcome post](https://www.reddit.com/r/nasa/comments/l43hoq/welcome_to_rnasa_please_read_this_post_for/)"
@@ -23,21 +22,22 @@ def main():
     reddit = praw.Reddit("nasabot")
     discord_webhook = reddit.config.custom["discord_webhook"]
     discord_mod_id = reddit.config.custom["discord_mod_id"]
-    debug_level = reddit.config.custom['app_debugging'].upper()
-    logging.basicConfig(level=debug_level,
+    app_debug_level = reddit.config.custom['app_debugging'].upper()
+    praw_debug_level = reddit.config.custom['praw_debugging'].upper()
+    logging.basicConfig(level=app_debug_level,
             format="%(asctime)s — %(levelname)s - %(funcName)s:%(lineno)d — %(message)s",
             datefmt="%c")
     handler = logging.StreamHandler()
-    handler.setLevel(debug_level)
+    handler.setLevel(praw_debug_level)
     for logger_name in ("praw", "prawcore"):
         logger = logging.getLogger(logger_name)
-        logger.setLevel(debug_level)
+        logger.setLevel(praw_debug_level)
         logger.addHandler(handler)
 
 # Iterate through submissions, process if it's the right subreddit and it either has no flair or it has flair not matching the template
 
     for submission in reddit.subreddit('all').hot(limit=250):
-        logging.info("Post in /r/"+str(submission.subreddit)+":"+submission.title+"/"+submission.id)
+        logging.debug("Post in /r/"+str(submission.subreddit)+":"+submission.title+"/"+submission.id)
         if submission.subreddit == SUB:
             if submission.link_flair_text != "/r/all":      # If flair doesn't say /r/all, process
                 process_submission(submission)
@@ -55,7 +55,7 @@ def process_submission(submission):
         logging.warning("Exception \"%s\" for id %s with title %s",e,submission.id,submission.title)
         
 def discord_alert(url,title):
-    logging.info("Submission titled '%s' at %s has hit /r/all",title,url)
+    logging.debug("Submission titled '%s' at %s has hit /r/all",title,url)
     data = {
         "content": discord_mod_id+" Submission titled '"+title+"' at "+url+" has hit /r/all",
         "username": "r-nasabot"
