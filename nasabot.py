@@ -1,8 +1,6 @@
 #!/usr/bin/python3
+"""Bot to flag posts that have hit /r/all on Reddit"""
 
-from distutils.util import strtobool
-from re import sub
-import sys
 import logging
 import requests
 
@@ -18,6 +16,7 @@ FLAIR_TEMPLATE_ID = "7216c708-7c40-11e4-b13d-12313d052165"
 
 
 def main():
+    """Main loop"""
 
     global discord_mod_id, discord_webhook
     reddit = praw.Reddit("nasabot")
@@ -49,6 +48,8 @@ def main():
 
 
 def process_submission(submission):
+    """Process a submission by replying, distinguishing the reply, and flairing"""
+
     logging.info("Replying in /r/"+str(submission.subreddit)+":" +
                  submission.title+"/"+str(submission.author)+"/"+submission.id)
     try:
@@ -63,6 +64,8 @@ def process_submission(submission):
 
 
 def discord_alert(url, title):
+    """Send an alert to a Discord channel"""
+
     logging.debug("Submission titled '%s' at %s has hit /r/all", title, url)
     data = {
         "content": discord_mod_id+" Submission titled '"+title+"' at "+url+" has hit /r/all",
