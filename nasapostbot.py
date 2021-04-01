@@ -10,7 +10,6 @@ import praw
 
 SUB = "nasa"
 
-
 def main():
     """Main loop"""
 
@@ -36,25 +35,6 @@ def main():
         reddit_url="https://reddit.com" + submission.permalink
         logging.debug("New post by %s: %s (%s)", submission.author,submission.title,reddit_url)
         discord_alert(reddit_url, submission.title)
-
-# Iterate through submissions, process if it's the right subreddit and it either has no flair or it has flair not matching the template
-
- 
-# def process_submission(submission):
-#     """Process a submission by replying, distinguishing the reply, and flairing"""
-
-#     logging.info("Replying in /r/"+str(submission.subreddit)+":" +
-#                  submission.title+"/"+str(submission.author)+"/"+submission.id)
-#     try:
-#         comment = submission.reply(REPLY_TEMPLATE)
-#         comment.mod.distinguish(how="yes", sticky=True)
-#         submission.mod.flair(
-#             flair_template_id=FLAIR_TEMPLATE_ID, text="/r/all")
-#         discord_alert(submission.url, submission.title)
-#     except praw.exceptions.PRAWException as e:
-#         logging.warning("Exception \"%s\" for id %s with title %s",
-#                         e, submission.id, submission.title)
-
 
 def discord_alert(url, title):
     """Send an alert to a Discord channel"""
