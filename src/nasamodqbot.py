@@ -12,7 +12,6 @@ from utils.discord_alert import discord_alert
 
 SUB = "TOY"
 
-
 def main():
     """Main loop"""
 
@@ -37,7 +36,6 @@ def main():
                       submission.author, submission.title, reddit_url)
         discord_alert(webhook, "nasamodqbot",
                       f"New modqueue entry: {submission.title} by {submission.author} {reddit_url}")
-
 
 if __name__ == "__main__":
     try:

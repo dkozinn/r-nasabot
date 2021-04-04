@@ -2,9 +2,12 @@
 """Bot to flag posts that have hit /r/all on Reddit"""
 
 import logging
-import requests
+#import requests
 
 import praw
+
+from utils import webhook
+from utils.discord_alert import discord_alert
 
 SUB = "nasa"
 REPLY_TEMPLATE = ("If you're visiting here perhaps for the first time from /r/all, "
@@ -18,10 +21,9 @@ FLAIR_TEMPLATE_ID = "7216c708-7c40-11e4-b13d-12313d052165"
 def main():
     """Main loop"""
 
-    global discord_mod_id, discord_webhook
     reddit = praw.Reddit("nasabot")
-    discord_webhook = reddit.config.custom["discord_webhook"]
-    discord_mod_id = reddit.config.custom["discord_mod_id"]
+#   discord_webhook = reddit.config.custom["discord_webhook"]
+#   discord_mod_id = reddit.config.custom["discord_mod_id"]
     app_debug_level = reddit.config.custom['app_debugging'].upper()
     praw_debug_level = reddit.config.custom['praw_debugging'].upper()
     logging.basicConfig(level=app_debug_level,
@@ -34,7 +36,8 @@ def main():
         logger.setLevel(praw_debug_level)
         logger.addHandler(handler)
 
-# Iterate through submissions, process if it's the right subreddit and it either has no flair or it has flair not matching the template
+# Iterate through submissions, process if it's the right subreddit and
+# it either has no flair or it has flair not matching the template
 
     for submission in reddit.subreddit('all').hot(limit=250):
         logging.debug("Post in /r/"+str(submission.subreddit) +
@@ -57,24 +60,12 @@ def process_submission(submission):
         comment.mod.distinguish(how="yes", sticky=True)
         submission.mod.flair(
             flair_template_id=FLAIR_TEMPLATE_ID, text="/r/all")
-        discord_alert(submission.url, submission.title)
-    except praw.exceptions.PRAWException as e:
+        discord_alert(
+            webhook, "nasabot",
+            f"Submission titled '{submission.title}' at https://reddit.com/r/{SUB}{submission.permalink} has hit /r/all")
+    except praw.exceptions.PRAWException as error:
         logging.warning("Exception \"%s\" for id %s with title %s",
-                        e, submission.id, submission.title)
-
-
-def discord_alert(url, title):
-    """Send an alert to a Discord channel"""
-
-    logging.debug("Submission titled '%s' at %s has hit /r/all", title, url)
-    data = {
-        "content": discord_mod_id+" Submission titled '"+title+"' at "+url+" has hit /r/all",
-        "username": "r-nasabot"
-    }
-    try:
-        requests.post(discord_webhook, data=data)
-    except requests.RequestException as e:
-        logging.warning("Failed to post to discord with error %s", e)
+                        error, submission.id, submission.title)
 
 
 if __name__ == "__main__":

@@ -33,7 +33,9 @@ def main():
     for submission in subreddit.stream.submissions(skip_existing=True):
         reddit_url = "https://reddit.com" + submission.permalink
         logging.debug("New post by %s: %s (%s)", submission.author, submission.title, reddit_url)
-        discord_alert(webhook, "postbot", reddit_url, submission.title)
+        discord_alert(
+            webhook, "nasabot", f"New post: '{submission.title} at https://reddit.com/r/{SUB}{submission.permalink}")
+#        discord_alert(webhook, "postbot", reddit_url, submission.title)
 
 if __name__ == "__main__":
     try:
