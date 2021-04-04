@@ -7,10 +7,10 @@ import sys
 
 import praw
 
-from utils import webhook
 from utils.discord_alert import discord_alert
 
-SUB = "TOY"
+SUB = "nasa"
+
 
 def main():
     """Main loop"""
@@ -18,6 +18,8 @@ def main():
     reddit = praw.Reddit("nasamodqbot")
     app_debug_level = reddit.config.custom['app_debugging'].upper()
     praw_debug_level = reddit.config.custom['praw_debugging'].upper()
+    discord_webhook = reddit.config.custom["discord_webhook"]
+
     logging.basicConfig(level=app_debug_level,
                         format="%(asctime)s — %(levelname)s - %(funcName)s:%(lineno)d — %(message)s",
                         datefmt="%c")
@@ -30,12 +32,13 @@ def main():
 
     subreddit = reddit.subreddit(SUB)
     logging.info("Entering main loop")
-    for submission in subreddit.mod.stream.modqueue(skip_existing=True):
+    for submission in subreddit.mod.stream.modqueue():
         reddit_url = "https://reddit.com" + submission.permalink
         logging.debug("New modqueue entry by %s: %s (%s)",
                       submission.author, submission.title, reddit_url)
-        discord_alert(webhook, "nasamodqbot",
+        discord_alert(discord_webhook, "nasamodqbot",
                       f"New modqueue entry: {submission.title} by {submission.author} {reddit_url}")
+
 
 if __name__ == "__main__":
     try:

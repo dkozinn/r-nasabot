@@ -6,7 +6,6 @@ import logging
 
 import praw
 
-from utils import webhook
 from utils.discord_alert import discord_alert
 
 SUB = "nasa"
@@ -16,14 +15,17 @@ REPLY_TEMPLATE = ("If you're visiting here perhaps for the first time from /r/al
                   " before posting, and we hope you'll stick around for a while.")
 FLAIR_TEMPLATE_ID = "7216c708-7c40-11e4-b13d-12313d052165"
 # FLAIR_TEMPLATE_ID="b37f60b8-74ac-11eb-9178-0e509773c193" #TOY
+DISCORD_MOD_ID = ""
+DISCORD_WEBHOOK = ""
 
 
 def main():
     """Main loop"""
 
+    global DISCORD_MOD_ID, DISCORD_WEBHOOK
     reddit = praw.Reddit("nasabot")
-#   discord_webhook = reddit.config.custom["discord_webhook"]
-#   discord_mod_id = reddit.config.custom["discord_mod_id"]
+    DISCORD_WEBHOOK = reddit.config.custom["discord_webhook"]
+    DISCORD_MOD_ID = reddit.config.custom["discord_mod_id"]
     app_debug_level = reddit.config.custom['app_debugging'].upper()
     praw_debug_level = reddit.config.custom['praw_debugging'].upper()
     logging.basicConfig(level=app_debug_level,
@@ -61,8 +63,8 @@ def process_submission(submission):
         submission.mod.flair(
             flair_template_id=FLAIR_TEMPLATE_ID, text="/r/all")
         discord_alert(
-            webhook, "nasabot",
-            f"Submission titled '{submission.title}' at https://reddit.com/r/{SUB}{submission.permalink} has hit /r/all")
+            DISCORD_WEBHOOK, "nasabot",
+            f"{DISCORD_MOD_ID} Submission titled '{submission.title}' at https://reddit.com/r/{SUB}{submission.permalink} has hit /r/all")
     except praw.exceptions.PRAWException as error:
         logging.warning("Exception \"%s\" for id %s with title %s",
                         error, submission.id, submission.title)

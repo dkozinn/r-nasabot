@@ -7,10 +7,10 @@ import sys
 
 import praw
 
-from utils import webhook
 from utils.discord_alert import discord_alert
 
 SUB = "nasa"
+
 
 def main():
     """Main loop"""
@@ -18,6 +18,7 @@ def main():
     reddit = praw.Reddit("nasapostbot")
     app_debug_level = reddit.config.custom['app_debugging'].upper()
     praw_debug_level = reddit.config.custom['praw_debugging'].upper()
+    discord_webhook = reddit.config.custom["discord_webhook"]
     logging.basicConfig(level=app_debug_level,
                         format="%(asctime)s — %(levelname)s - %(funcName)s:%(lineno)d — %(message)s",
                         datefmt="%c")
@@ -32,10 +33,11 @@ def main():
     logging.info("Entering main loop")
     for submission in subreddit.stream.submissions(skip_existing=True):
         reddit_url = "https://reddit.com" + submission.permalink
-        logging.debug("New post by %s: %s (%s)", submission.author, submission.title, reddit_url)
+        logging.debug("New post by %s: %s (%s)",
+                      submission.author, submission.title, reddit_url)
         discord_alert(
-            webhook, "nasabot", f"New post: '{submission.title} at https://reddit.com/r/{SUB}{submission.permalink}")
-#        discord_alert(webhook, "postbot", reddit_url, submission.title)
+            discord_webhook, "nasabot", f"New post: '{submission.title} at https://reddit.com/r/{SUB}{submission.permalink}")
+
 
 if __name__ == "__main__":
     try:
@@ -44,4 +46,3 @@ if __name__ == "__main__":
         sys.exit(0)
     except Exception as error:
         system("ntfy -o priority 1 -t 'nasapostbot crashed' send '" + str(error) + "'")
-        
