@@ -2,6 +2,7 @@
 """Bot to send new post titles to Discord"""
 
 import logging
+from os import system
 import sys
 
 import praw
@@ -39,3 +40,6 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         sys.exit(0)
+    except Exception as error:
+        system("ntfy -o priority 1 -t 'nasapostbot crashed' send '" + str(error) + "'")
+        
