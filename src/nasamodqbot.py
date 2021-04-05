@@ -34,17 +34,20 @@ def main():
     logging.info("Entering main loop")
     for submission in subreddit.mod.stream.modqueue():
         reddit_url = "https://reddit.com" + submission.permalink
+        title = getattr(submission, "title", "Comment")
         logging.debug("New modqueue entry by %s: %s (%s)",
-                      submission.author, submission.title, reddit_url)
+                      submission.author, title, reddit_url)
         discord_alert(discord_webhook, "nasamodqbot",
-                      f"New modqueue entry: {submission.title} by {submission.author} {reddit_url}")
+                      f"New modqueue entry: {title} by {submission.author} {reddit_url}")
 
 
 if __name__ == "__main__":
+    import traceback
     try:
         main()
     except KeyboardInterrupt:
         sys.exit(0)
     except Exception as error:
-        system(
-            "ntfy -o priority 1 -t 'nasa modqueue bot crashed' send '" + str(error) + "'")
+        traceback.print_exc()
+        logging.fatal(error)
+        system("ntfy -o priority 1 -t 'nasa modqueue bot crashed' send '" + str(error) + "'")
