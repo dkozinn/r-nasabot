@@ -10,6 +10,7 @@ import praw
 from utils.discord_alert import discord_alert
 
 SUB = "nasa"
+MODQUEUE_URL = f"https://www.reddit.com/r/{SUB}/about/modqueue/"
 
 
 def main():
@@ -38,7 +39,7 @@ def main():
         logging.debug("New modqueue entry by %s: %s (%s)",
                       submission.author, title, reddit_url)
         discord_alert(discord_webhook, "nasamodqbot",
-                      f"New modqueue entry: {title} by {submission.author} {reddit_url}")
+                      f"New modqueue entry: {title} by {submission.author} {MODQUEUE_URL}")
 
 
 if __name__ == "__main__":
