@@ -6,7 +6,7 @@ import logging
 
 import praw
 
-from utils.discord_alert import discord_alert
+from nasautils.discord_alert import discord_alert
 
 SUB = "nasa"
 REPLY_TEMPLATE = ("If you're visiting here perhaps for the first time from /r/all, "

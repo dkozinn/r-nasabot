@@ -7,7 +7,7 @@ import sys
 
 import praw
 
-from utils.discord_alert import discord_alert
+from nasautils.discord_alert import discord_alert
 
 SUB = "nasa"
 
