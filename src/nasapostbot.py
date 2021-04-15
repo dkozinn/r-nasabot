@@ -20,7 +20,7 @@ def main():
     praw_debug_level = reddit.config.custom['praw_debugging'].upper()
     discord_webhook = reddit.config.custom["discord_webhook"]
     logging.basicConfig(level=app_debug_level,
-                        format="%(asctime)s — %(levelname)s - %(funcName)s:%(lineno)d — %(message)s",
+                        format="%(levelname)s - %(module)s:%(funcName)s:%(lineno)d — %(message)s",
                         datefmt="%c")
     handler = logging.StreamHandler()
     handler.setLevel(praw_debug_level)
@@ -36,7 +36,7 @@ def main():
         logging.debug("New post by %s: %s (%s)",
                       submission.author, submission.title, reddit_url)
         discord_alert(
-            discord_webhook, "nasabot", f"New post: '{submission.title} at https://reddit.com{submission.permalink}")
+            discord_webhook, "nasabot", f"New post: {submission.title}", reddit_url)
 
 
 if __name__ == "__main__":
@@ -45,4 +45,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         sys.exit(0)
     except Exception as error:
+        logging.exception("Unexpected error")
         system("ntfy -o priority 1 -t 'nasapostbot crashed' send '" + str(error) + "'")

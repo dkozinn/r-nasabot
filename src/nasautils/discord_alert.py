@@ -5,7 +5,7 @@ from time import sleep
 import requests
 
 
-def discord_alert(webhook, username, message):
+def discord_alert(webhook, username, message, url):
     """
     Send an alert to a Discord channel about a new Reddit post
 
@@ -13,16 +13,23 @@ def discord_alert(webhook, username, message):
         webhook: str - webhoook URL
         username: str - Discord username to display
         message: str - message to post
+        url: str - Link to post
 
     """
 
+    # data = {
+    #     "content": message,
+    #     "username": username
+    # }
     data = {
-        "content": message,
-        "username": username
+        "embeds": [{
+            "title": message,
+            "url": url
+        }]
     }
-    logging.info("Posting message as %s: %s", username, message)
+    logging.info("Posting message as %s: %s (%s)", username, message, url)
     try:
-        r = requests.post(webhook, data=data)
+        r = requests.post(webhook, json=data)
         # Always wait at least x-ratelimit-reset-after seconds
         sleep(int(r.headers['X-ratelimit-reset-after']))
 

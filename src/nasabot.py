@@ -29,7 +29,7 @@ def main():
     app_debug_level = reddit.config.custom['app_debugging'].upper()
     praw_debug_level = reddit.config.custom['praw_debugging'].upper()
     logging.basicConfig(level=app_debug_level,
-                        format="%(asctime)s — %(levelname)s - %(funcName)s:%(lineno)d — %(message)s",
+                        format="%(asctime)s — %(levelname)s - %(module)s:%(funcName)s:%(lineno)d — %(message)s",
                         datefmt="%c")
     handler = logging.StreamHandler()
     handler.setLevel(praw_debug_level)
@@ -64,7 +64,8 @@ def process_submission(submission):
             flair_template_id=FLAIR_TEMPLATE_ID, text="/r/all")
         discord_alert(
             DISCORD_WEBHOOK, "nasabot",
-            f"{DISCORD_MOD_ID} Submission titled '{submission.title}' at https://reddit.com/r/{SUB}{submission.permalink} has hit /r/all")
+            f"{DISCORD_MOD_ID} Submission titled '{submission.title}' has hit /r/all",
+            "https://reddit.com/r{submission.permalink}")
     except praw.exceptions.PRAWException as error:
         logging.warning("Exception \"%s\" for id %s with title %s",
                         error, submission.id, submission.title)
