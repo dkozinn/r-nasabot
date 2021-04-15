@@ -1,0 +1,16 @@
+[Unit]
+Description=Scan /r/nasa modqueue
+After = network.target
+StartLimitBurst=5
+StartLimitIntervalSec=3600
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python /usr/local/bin/nasamodqbot.py
+RestartSec=300
+User=david
+Environment="PYTHONPATH=/home/david/.local/lib/python-local"
+PassEnvironment=PYTHONPATH
+
+[Install]
+WantedBy=multi-user.target
