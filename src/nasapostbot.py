@@ -47,3 +47,4 @@ if __name__ == "__main__":
     except Exception as error:
         logging.exception("Unexpected error")
         system("ntfy -o priority 1 -t 'nasapostbot crashed' send '" + str(error) + "'")
+        sys.exit(1)

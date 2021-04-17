@@ -51,3 +51,4 @@ if __name__ == "__main__":
         logging.exception("Unexpected error")
         system(
             "ntfy -o priority 1 -t 'nasa modqueue bot crashed' send '" + str(error) + "'")
+        sys.exit(1)
