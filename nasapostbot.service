@@ -1,5 +1,5 @@
 [Unit]
-Description=Scan for new posts in /r/nasa
+Description=nasapostbot: Scan for new posts in /r/nasa
 After = network.target
 StartLimitBurst=5
 StartLimitIntervalSec=3600

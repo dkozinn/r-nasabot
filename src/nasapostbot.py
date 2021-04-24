@@ -36,7 +36,7 @@ def main():
         logging.debug("New post by %s: %s (%s)",
                       submission.author, submission.title, reddit_url)
         discord_alert(
-            discord_webhook, "nasabot", f"New post: {submission.title}", reddit_url)
+            discord_webhook, "nasapostbot", submission.title, reddit_url)
 
 
 if __name__ == "__main__":

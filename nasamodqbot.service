@@ -1,5 +1,5 @@
 [Unit]
-Description=Scan /r/nasa modqueue
+Description=nasamodqbot: Scan /r/nasa modqueue
 After = network.target
 StartLimitBurst=5
 StartLimitIntervalSec=3600
