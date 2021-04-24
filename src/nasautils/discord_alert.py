@@ -3,6 +3,7 @@ import logging
 from time import sleep
 
 import requests
+from requests.exceptions import HTTPError
 
 
 def discord_alert(webhook, username, message, url):
@@ -25,11 +26,14 @@ def discord_alert(webhook, username, message, url):
         "embeds": [{
             "title": message,
             "url": url
-        }]
+        }],
+        "username": username
     }
     logging.info("Posting message as %s: %s (%s)", username, message, url)
     try:
         r = requests.post(webhook, json=data)
+        r.raise_for_status()
+
         # Always wait at least x-ratelimit-reset-after seconds
         sleep(int(r.headers['X-ratelimit-reset-after']))
 
@@ -38,14 +42,15 @@ def discord_alert(webhook, username, message, url):
             logging.warning("Rate limit about to be hit, sleeping %d seconds", int(
                 r.headers['X-ratelimit-reset-after'])*2)
             sleep(int(r.headers['X-ratelimit-reset-after'])*2)
-        r.raise_for_status()
-    except requests.RequestException as e:
-        if r.status_code == 429:    # Rate limiting
+
+    except HTTPError as err:
+        if err.response.status_code == 429:    #rate limiting
             # from discord.py/webhook.py
             retry_after = int(r.headers['retry-after'])/1000
             logging.warning(
                 "Got 429 rate-limit, sleeping for %.2f seconds", retry_after)
             sleep(retry_after)
         else:
-            logging.error("Failed to post to discord with error %s", e)
+            logging.error("Failed to post to discord with error %s", err)
+            raise(err)
             
