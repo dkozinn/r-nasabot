@@ -18,13 +18,11 @@ def discord_alert(webhook, username, message, url):
 
     """
 
-    # data = {
-    #     "content": message,
-    #     "username": username
-    # }
     data = {
         "embeds": [{
-            "title": message,
+            # Truncate to max length for title
+            # see https://discord.com/developers/docs/resources/channel#embed-limits
+            "title": (message[:253] + '...') if len(message) > 256 else message,
             "url": url
         }],
         "username": username
@@ -52,4 +50,4 @@ def discord_alert(webhook, username, message, url):
             sleep(retry_after)
         else:
             logging.error("Failed to post to discord with error %s", err)
-            raise(err)
+            raise err
