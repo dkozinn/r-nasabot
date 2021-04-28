@@ -29,7 +29,7 @@ def discord_alert(webhook, username, message, url):
         }],
         "username": username
     }
-    logging.info("Posting message as %s: %s (%s)", username, message, url)
+    logging.debug("Posting message as %s: %s (%s)", username, message, url)
     try:
         r = requests.post(webhook, json=data)
         r.raise_for_status()
@@ -44,7 +44,7 @@ def discord_alert(webhook, username, message, url):
             sleep(int(r.headers['X-ratelimit-reset-after'])*2)
 
     except HTTPError as err:
-        if err.response.status_code == 429:    #rate limiting
+        if err.response.status_code == 429:  # rate limiting
             # from discord.py/webhook.py
             retry_after = int(r.headers['retry-after'])/1000
             logging.warning(
@@ -53,4 +53,3 @@ def discord_alert(webhook, username, message, url):
         else:
             logging.error("Failed to post to discord with error %s", err)
             raise(err)
-            

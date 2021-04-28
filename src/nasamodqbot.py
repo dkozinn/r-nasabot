@@ -22,7 +22,8 @@ def main():
     discord_webhook = reddit.config.custom["discord_webhook"]
 
     logging.basicConfig(level=app_debug_level,
-                        format="%(levelname)s - %(module)s:%(funcName)s:%(lineno)d — %(message)s",
+                        filename="/var/log/nasabot.log",
+                        format="%(asctime)s %(levelname)s - %(module)s:%(funcName)s:%(lineno)d — %(message)s",
                         datefmt="%c")
     handler = logging.StreamHandler()
     handler.setLevel(praw_debug_level)
@@ -37,10 +38,11 @@ def main():
     for submission in subreddit.mod.stream.modqueue():
         title = getattr(submission, "title", "Comment")
         link = f"https://reddit.com{submission.permalink}"
-        logging.debug("New modqueue entry from %s: %s (%s)",
+        logging.info("New modqueue entry from %s: %s (%s)",
                       submission.author, title, link)
         discord_alert(discord_webhook, "NASA Modqueue Bot",
                       f"Modqueue: {title} by {submission.author}", link)
+
 
 if __name__ == "__main__":
     try:
