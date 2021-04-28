@@ -29,6 +29,7 @@ def main():
     app_debug_level = reddit.config.custom['app_debugging'].upper()
     praw_debug_level = reddit.config.custom['praw_debugging'].upper()
     logging.basicConfig(level=app_debug_level,
+                        filename="/var/log/nasabot.log",
                         format="%(asctime)s — %(levelname)s - %(module)s:%(funcName)s:%(lineno)d — %(message)s",
                         datefmt="%c")
     handler = logging.StreamHandler()

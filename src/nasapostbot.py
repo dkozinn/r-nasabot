@@ -20,7 +20,8 @@ def main():
     praw_debug_level = reddit.config.custom['praw_debugging'].upper()
     discord_webhook = reddit.config.custom["discord_webhook"]
     logging.basicConfig(level=app_debug_level,
-                        format="%(levelname)s - %(module)s:%(funcName)s:%(lineno)d — %(message)s",
+                        filename="/var/log/nasabot.log",
+                        format="%(asctime)s %(levelname)s - %(module)s:%(funcName)s:%(lineno)d — %(message)s",
                         datefmt="%c")
     handler = logging.StreamHandler()
     handler.setLevel(praw_debug_level)
@@ -33,10 +34,10 @@ def main():
     logging.info("Entering main loop")
     for submission in subreddit.stream.submissions(skip_existing=True):
         reddit_url = "https://reddit.com" + submission.permalink
-        logging.debug("New post by %s: %s (%s)",
+        logging.info("New post by %s: %s (%s)",
                       submission.author, submission.title, reddit_url)
         discord_alert(
-            discord_webhook, "nasabot", f"New post: {submission.title}", reddit_url)
+            discord_webhook, "nasapostbot", submission.title, reddit_url)
 
 
 if __name__ == "__main__":
