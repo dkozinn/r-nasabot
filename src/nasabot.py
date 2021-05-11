@@ -56,7 +56,7 @@ def main():
 def process_submission(submission):
     """Process a submission by replying, distinguishing the reply, and flairing"""
 
-    logging.info("Replying in /r/"+str(submission.subreddit)+":" +
+    logging.info("Post hit /r/all from /r/"+str(submission.subreddit)+":" +
                  submission.title+"/"+str(submission.author)+"/"+submission.id)
     try:
         comment = submission.reply(REPLY_TEMPLATE)
