@@ -5,6 +5,7 @@ import logging
 from os import system
 import sys
 
+import prawcore
 import praw
 
 from nasautils.discord_alert import discord_alert
@@ -49,6 +50,8 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         sys.exit(0)
+    except prawcore.exceptions.ServerError:
+        logging.exception("Reddit error")
     except Exception as error:
         logging.exception("Unexpected error")
         system(
