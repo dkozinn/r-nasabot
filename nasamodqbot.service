@@ -7,7 +7,7 @@ StartLimitIntervalSec=3600
 [Service]
 Type=simple
 ExecStart=/usr/bin/python /usr/local/bin/nasamodqbot.py
-RestartSec=60
+RestartSec=600
 Restart=on-failure
 User=david
 Environment="PYTHONPATH=/home/david/.local/lib/python-local"
