@@ -48,6 +48,7 @@ if __name__ == "__main__":
         sys.exit(0)
     except prawcore.exceptions.ServerError:
         logging.exception("Reddit error")
+        sys.exit(2)
     except Exception as error:
         logging.exception("Unexpected error")
         system("ntfy -o priority 1 -t 'nasapostbot crashed' send '" + str(error) + "'")
