@@ -6,7 +6,7 @@ import requests
 from requests.exceptions import HTTPError
 
 
-def discord_alert(webhook, username, message, url):
+def discord_alert(webhook, username, message, url, notify=None):
     """
     Send an alert to a Discord channel about a new Reddit post
 
@@ -15,10 +15,12 @@ def discord_alert(webhook, username, message, url):
         username: str - Discord username to display
         message: str - message to post
         url: str - Link to post
+        notify[optional]: Discord-formatted user/role to @notify
 
     """
 
     data = {
+        "content": notify if notify else "",
         "embeds": [{
             # Truncate to max length for title
             # see https://discord.com/developers/docs/resources/channel#embed-limits

@@ -65,8 +65,8 @@ def process_submission(submission):
             flair_template_id=FLAIR_TEMPLATE_ID, text="/r/all")
         discord_alert(
             DISCORD_WEBHOOK, "nasabot",
-            f"{DISCORD_MOD_ID} Submission titled '{submission.title}' has hit /r/all",
-            "https://reddit.com/r{submission.permalink}")
+            f"Submission titled '{submission.title}' has hit /r/all",
+            "https://reddit.com/r{submission.permalink}",notify=DISCORD_MOD_ID)
     except praw.exceptions.PRAWException as error:
         logging.warning("Exception \"%s\" for id %s with title %s",
                         error, submission.id, submission.title)
