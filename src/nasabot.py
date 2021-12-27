@@ -23,6 +23,7 @@ def main():
     """Main loop"""
 
     global DISCORD_MOD_ID, DISCORD_WEBHOOK
+    index = 0
     reddit = praw.Reddit("nasabot")
     DISCORD_WEBHOOK = reddit.config.custom["discord_webhook"]
     DISCORD_MOD_ID = reddit.config.custom["discord_mod_id"]
@@ -43,21 +44,22 @@ def main():
 # it either has no flair or it has flair not matching the template
 
     for submission in reddit.subreddit('all').hot(limit=250):
+        index += 1
         logging.debug("Post in /r/"+str(submission.subreddit) +
-                      ":"+submission.title+"/"+submission.id)
+                      ":"+submission.title+"/"+submission.id+" index="+str(index))
         if submission.subreddit == SUB:
             if submission.link_flair_text != "/r/all":      # If flair doesn't say /r/all, process
-                process_submission(submission)
+                process_submission(submission, index)
             # If flair is /r/all but wrong template, process
             elif getattr(submission, 'link_flair_template_id', "NONE") != FLAIR_TEMPLATE_ID:
-                process_submission(submission)
+                process_submission(submission, index)
 
 
-def process_submission(submission):
+def process_submission(submission, index):
     """Process a submission by replying, distinguishing the reply, and flairing"""
 
     logging.info("Post hit /r/all from /r/"+str(submission.subreddit)+":" +
-                 submission.title+"/"+str(submission.author)+"/"+submission.id)
+                 submission.title+"/"+str(submission.author)+"/"+submission.id+" index="+str(index))
     try:
         comment = submission.reply(REPLY_TEMPLATE)
         comment.mod.distinguish(how="yes", sticky=True)
@@ -65,8 +67,8 @@ def process_submission(submission):
             flair_template_id=FLAIR_TEMPLATE_ID, text="/r/all")
         discord_alert(
             DISCORD_WEBHOOK, "nasabot",
-            f"Submission titled '{submission.title}' has hit /r/all",
-            "https://reddit.com/r{submission.permalink}",notify=DISCORD_MOD_ID)
+            f"Submission titled '{submission.title}' has hit /r/all with an index of {index}",
+            "https://reddit.com/r{submission.permalink}", notify=DISCORD_MOD_ID)
     except praw.exceptions.PRAWException as error:
         logging.warning("Exception \"%s\" for id %s with title %s",
                         error, submission.id, submission.title)
