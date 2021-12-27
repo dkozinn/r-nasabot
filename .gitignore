@@ -162,7 +162,4 @@ Thumbs.db #thumbnail cache on Windows
 
 #misc
 local.notes
-test.py
-src/test2.py
-src/test3.py
-src/testbot.py
+**/test*.py
