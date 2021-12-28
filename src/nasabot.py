@@ -63,6 +63,7 @@ def process_submission(submission, index):
     try:
         comment = submission.reply(REPLY_TEMPLATE)
         comment.mod.distinguish(how="yes", sticky=True)
+        comment.disable_inbox_replies()
         submission.mod.flair(
             flair_template_id=FLAIR_TEMPLATE_ID, text="/r/all")
         discord_alert(
