@@ -19,6 +19,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
     - name: Analysing the code with pylint
+      continue-on-error: true
       run: |
-        continue-on-error: true
         find . -name "*py" | xargs pylint
