@@ -9,6 +9,7 @@ import prawcore
 import praw
 
 from nasautils.discord_alert import discord_alert
+from q_signals import send_signal, Q_WHITE
 
 SUB = "nasa"
 #MODQUEUE_URL = f"https://www.reddit.com/r/{SUB}/about/modqueue/"
@@ -40,9 +41,10 @@ def main():
         title = getattr(submission, "title", "Comment")
         link = f"https://reddit.com{submission.permalink}"
         logging.info("New modqueue entry from %s: %s (%s)",
-                      submission.author, title, link)
+                     submission.author, title, link)
         discord_alert(discord_webhook, "NASA Modqueue Bot",
                       f"Modqueue: {title} by {submission.author}", link)
+        send_signal(Q_WHITE, f"Modqueue: {title} by {submission.author}", name="Modqueue post")
 
 
 if __name__ == "__main__":
@@ -52,7 +54,7 @@ if __name__ == "__main__":
         sys.exit(0)
     except prawcore.exceptions.ServerError:
         logging.exception("Reddit error")
-        sys.exit(2)        
+        sys.exit(2)
     except Exception as error:
         logging.exception("Unexpected error")
         system(
