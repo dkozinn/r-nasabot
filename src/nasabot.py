@@ -61,7 +61,7 @@ def process_submission(submission, index):
     logging.info("Post hit /r/all from /r/"+str(submission.subreddit)+":" +
                  submission.title+"/"+str(submission.author)+"/"+submission.id+" index="+str(index))
     try:
-        comment = submission.reply(REPLY_TEMPLATE)
+        comment = submission.reply(body=REPLY_TEMPLATE)
         comment.mod.distinguish(how="yes", sticky=True)
         comment.disable_inbox_replies()
         submission.mod.flair(
