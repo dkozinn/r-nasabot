@@ -35,7 +35,7 @@ def main():
     redditor = reddit.redditor(USER)
     logging.info("Entering main loop")
     for submission in redditor.stream.submissions(skip_existing=True):
-        cross_post = submission.crosspost(SUB, send_replies=False)
+        cross_post = submission.crosspost(SUB, flair_id="0f2362b2-7fae-11e3-bed4-22000aa47206", send_replies=False)
         reddit_url = "https://reddit.com" + cross_post.permalink
         logging.info("Cross-posted '%s' from %s at %s",
                      cross_post.title, cross_post.author, reddit_url)
