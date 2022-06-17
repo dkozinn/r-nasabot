@@ -28,7 +28,6 @@ def main():
     DISCORD_WEBHOOK = reddit.config.custom["discord_webhook"]
     DISCORD_MOD_ID = reddit.config.custom["discord_mod_id"]
     app_debug_level = reddit.config.custom['app_debugging'].upper()
-    app_debug_level = "DEBUG"
     praw_debug_level = reddit.config.custom['praw_debugging'].upper()
     logging.basicConfig(level=app_debug_level,
                         filename="/var/log/nasabot.log",
