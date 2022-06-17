@@ -28,6 +28,7 @@ def main():
     DISCORD_WEBHOOK = reddit.config.custom["discord_webhook"]
     DISCORD_MOD_ID = reddit.config.custom["discord_mod_id"]
     app_debug_level = reddit.config.custom['app_debugging'].upper()
+    app_debug_level = "DEBUG"
     praw_debug_level = reddit.config.custom['praw_debugging'].upper()
     logging.basicConfig(level=app_debug_level,
                         filename="/var/log/nasabot.log",
@@ -45,8 +46,8 @@ def main():
 
     for submission in reddit.subreddit('all').hot(limit=250):
         index += 1
-        logging.debug("Post in /r/"+str(submission.subreddit) +
-                      ":"+submission.title+"/"+submission.id+" index="+str(index))
+        logging.debug("Post in /r/%s:%s/%s index=%s", str(submission.subreddit),
+                      submission.title, submission.id, str(index))
         if submission.subreddit == SUB:
             if submission.link_flair_text != "/r/all":      # If flair doesn't say /r/all, process
                 process_submission(submission, index)
@@ -58,8 +59,9 @@ def main():
 def process_submission(submission, index):
     """Process a submission by replying, distinguishing the reply, and flairing"""
 
-    logging.info("Post hit /r/all from /r/"+str(submission.subreddit)+":" +
-                 submission.title+"/"+str(submission.author)+"/"+submission.id+" index="+str(index))
+    logging.info("Post hit /r/all from /r/%s:%s/%s index=%s", str(submission.subreddit),
+                 submission.title, str(submission.author), str(index))
+
     try:
         comment = submission.reply(body=REPLY_TEMPLATE)
         comment.mod.distinguish(how="yes", sticky=True)
@@ -69,7 +71,7 @@ def process_submission(submission, index):
         discord_alert(
             DISCORD_WEBHOOK, "nasabot",
             f"Submission titled '{submission.title}' has hit /r/all with an index of {index}",
-            "https://reddit.com/r{submission.permalink}", notify=DISCORD_MOD_ID)
+            f"https://reddit.com{submission.permalink}", notify=DISCORD_MOD_ID)
     except praw.exceptions.PRAWException as error:
         logging.warning("Exception \"%s\" for id %s with title %s",
                         error, submission.id, submission.title)

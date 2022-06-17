@@ -36,7 +36,7 @@ def main():
     for submission in subreddit.stream.submissions(skip_existing=True):
         reddit_url = "https://reddit.com" + submission.permalink
         logging.info("New post by %s: %s (%s)",
-                      submission.author, submission.title, reddit_url)
+                     submission.author, submission.title, reddit_url)
         discord_alert(
             discord_webhook, "nasapostbot", submission.title, reddit_url)
 
