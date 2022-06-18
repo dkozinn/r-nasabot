@@ -9,11 +9,14 @@ import prawcore
 import praw
 
 from nasautils.discord_alert import discord_alert
-from q_signals import send_signal, Q_WHITE
+try:
+    from q_signals import send_signal, Q_WHITE
+    GOT_Q = True
+except ModuleNotFoundError:
+    GOT_Q = False
 
 SUB = "nasa"
 #MODQUEUE_URL = f"https://www.reddit.com/r/{SUB}/about/modqueue/"
-
 
 def main():
     """Main loop"""
@@ -44,8 +47,8 @@ def main():
                      submission.author, title, link)
         discord_alert(discord_webhook, "NASA Modqueue Bot",
                       f"Modqueue: {title} by {submission.author}", link)
-        send_signal(Q_WHITE, f"Modqueue: {title} by {submission.author}", name="Modqueue post")
-
+        if GOT_Q:
+            send_signal(Q_WHITE, f"Modqueue: {title} by {submission.author}", name="Modqueue post")
 
 if __name__ == "__main__":
     try:
