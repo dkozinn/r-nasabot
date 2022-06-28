@@ -1,0 +1,14 @@
+# Install: copy  to /etc/logrotate.d/nasabot.
+/var/log/nasabot.log {
+	daily
+	minsize 100k
+	rotate 7
+	compress
+	delaycompress
+	notifempty
+	create 
+	postrotate
+		systemctl restart nasamodqbot
+		systemctl restart nasapostbot
+	endscript
+}
