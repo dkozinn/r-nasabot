@@ -41,7 +41,10 @@ def main():
     logging.info("Entering main loop")
 
     for submission in subreddit.mod.stream.modqueue():
-        title = getattr(submission, "title", "Comment")
+        try:
+            title = getattr(submission, "title")
+        except AttributeError:      #If no title, then we have a comment
+            title = f"Comment on post '{submission.link_title}'"
         link = f"https://reddit.com{submission.permalink}"
         logging.info("New modqueue entry from %s: %s (%s)",
                      submission.author, title, link)
