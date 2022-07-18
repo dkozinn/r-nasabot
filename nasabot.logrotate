@@ -10,5 +10,6 @@
 	postrotate
 		systemctl restart nasamodqbot
 		systemctl restart nasapostbot
+		systemctl restart nasaxpost
 	endscript
 }
