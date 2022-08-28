@@ -53,6 +53,12 @@ def main():
             # If flair is /r/all but wrong template, process
             elif getattr(submission, 'link_flair_template_id', "NONE") != FLAIR_TEMPLATE_ID:
                 process_submission(submission, index)
+            # Already processed, just notify of the new index number
+            else:
+                discord_alert(
+                    DISCORD_WEBHOOK, "nasabot",
+                    f"Submission titled '{submission.title}' has updated /r/all index of {index}",
+                    f"https://reddit.com{submission.permalink}", notify=DISCORD_MOD_ID)
 
 
 def process_submission(submission, index):
