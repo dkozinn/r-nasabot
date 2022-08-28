@@ -9,7 +9,7 @@ import prawcore
 import praw
 
 SUB = "nasa"
-USER = "nasa"
+USERSUB = "u_nasa"
 
 
 def main():
@@ -32,9 +32,9 @@ def main():
         logger.setLevel(praw_debug_level)
         logger.addHandler(handler)
 
-    redditor = reddit.redditor(USER)
+    subreddit = reddit.subreddit(USERSUB)
     logging.info("Entering main loop")
-    for submission in redditor.stream.submissions(skip_existing=True):
+    for submission in subreddit.stream.submissions(skip_existing=True):
         try:
             cross_post = submission.crosspost(SUB, flair_id="0f2362b2-7fae-11e3-bed4-22000aa47206",
                                               send_replies=False)
