@@ -2,9 +2,9 @@
 """Bot to flag posts that have hit /r/all on Reddit"""
 
 import logging
-#import requests
 
 import praw
+import praw.exceptions
 
 from nasautils.discord_alert import discord_alert
 

@@ -41,7 +41,7 @@ def main():
                 hasattr(submission, "crosspost_parent") and
                 reddit.submission(reddit.submission(submission.crosspost_parent.split("_")[1])).subreddit
                 == "nasa"
-            ):
+        ):
             reddit_url = "https://reddit.com" + submission.permalink
             logging.info("Did not re-crosspost '%s' from %s at %s",
                          submission.title, submission.author, reddit_url)

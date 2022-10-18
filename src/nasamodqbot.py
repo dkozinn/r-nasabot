@@ -2,21 +2,22 @@
 """Bot to send new items in modqueue to Discord"""
 
 import logging
-from os import system
 import sys
+from os import system
 
-import prawcore
 import praw
+import prawcore
 
 from nasautils.discord_alert import discord_alert
+
 try:
-    from q_signals import send_signal, Q_WHITE
+    from q_signals import Q_WHITE, send_signal
     GOT_Q = True
 except ModuleNotFoundError:
     GOT_Q = False
 
 SUB = "nasa"
-#MODQUEUE_URL = f"https://www.reddit.com/r/{SUB}/about/modqueue/"
+
 
 def main():
     """Main loop"""
@@ -43,7 +44,7 @@ def main():
     for submission in subreddit.mod.stream.modqueue():
         try:
             title = getattr(submission, "title")
-        except AttributeError:      #If no title, then we have a comment
+        except AttributeError:     # If no title, then we have a comment
             title = f"Comment on post '{submission.link_title}'"
         link = f"https://reddit.com{submission.permalink}"
         logging.info("New modqueue entry from %s: %s (%s)",
@@ -53,6 +54,7 @@ def main():
         if GOT_Q:
             send_signal(Q_WHITE, f"Modqueue: {title} by {submission.author}", name="Modqueue post")
 
+
 if __name__ == "__main__":
     try:
         main()
@@ -61,7 +63,7 @@ if __name__ == "__main__":
     except prawcore.exceptions.ServerError:
         logging.exception("Reddit error")
         sys.exit(2)
-    except Exception as error:
+    except Exception as error:  # pylint: disable=broad-except
         logging.exception("Unexpected error")
         system(
             "ntfy -o priority 1 -t 'nasa modqueue bot crashed' send '" + str(error) + "'")

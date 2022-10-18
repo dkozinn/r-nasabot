@@ -2,11 +2,11 @@
 """Bot to send new post titles to Discord"""
 
 import logging
-from os import system
 import sys
+from os import system
 
-import prawcore
 import praw
+import prawcore
 
 from nasautils.discord_alert import discord_alert
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     except prawcore.exceptions.ServerError:
         logging.exception("Reddit error")
         sys.exit(2)
-    except Exception as error:
+    except Exception as error:  # pylint: disable=broad-except
         logging.exception("Unexpected error")
         system("ntfy -o priority 1 -t 'nasapostbot crashed' send '" + str(error) + "'")
         sys.exit(1)
