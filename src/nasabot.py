@@ -1,13 +1,12 @@
 #!/usr/bin/python3
-# pylint: disable=bad-continuation
+
 """Bot to flag posts that have hit /r/all on Reddit"""
 
 import logging
 
 import praw
 import praw.exceptions
-
-from nasautils.discord_alert import discord_alert
+from discord_webhook import DiscordWebhook
 
 SUB = "nasa"
 
@@ -20,21 +19,19 @@ REPLY_TEMPLATE = (
 )
 FLAIR_TEMPLATE_ID = "7216c708-7c40-11e4-b13d-12313d052165"
 # FLAIR_TEMPLATE_ID="b37f60b8-74ac-11eb-9178-0e509773c193" #TOY
-DISCORD_MOD_ID = ""
-DISCORD_WEBHOOK = ""
+
+reddit = praw.Reddit("nasabot")
+DISCORD_WEBHOOK = reddit.config.custom["discord_webhook"]
+DISCORD_MOD_ID = reddit.config.custom["discord_mod_id"]
+app_debug_level = reddit.config.custom["app_debugging"].upper()
+praw_debug_level = reddit.config.custom["praw_debugging"].upper()
 
 
 def main():
 
     """Main loop"""
 
-    global DISCORD_MOD_ID, DISCORD_WEBHOOK
     index = 0
-    reddit = praw.Reddit("nasabot")
-    DISCORD_WEBHOOK = reddit.config.custom["discord_webhook"]
-    DISCORD_MOD_ID = reddit.config.custom["discord_mod_id"]
-    app_debug_level = reddit.config.custom["app_debugging"].upper()
-    praw_debug_level = reddit.config.custom["praw_debugging"].upper()
     logging.basicConfig(
         level=app_debug_level,
         filename="/var/log/nasabot.log",
@@ -73,13 +70,14 @@ def main():
                 process_submission(submission, index)
             # Already processed, just notify of the new index number
             else:
-                discord_alert(
+                webhook = DiscordWebhook(
                     DISCORD_WEBHOOK,
-                    "nasabot",
-                    f"Submission titled '{submission.title}' has updated /r/all index of {index}",
-                    f"https://reddit.com{submission.permalink}",
-                    notify=DISCORD_MOD_ID,
+                    username="nasabot",
+                    content=f"{DISCORD_MOD_ID}Submission titled "
+                    "'[{submission.title}]({submission.permalink}'"
+                    "has updated /r/all index of {index})",
                 )
+                webhook.execute()
 
 
 def process_submission(submission, index):
@@ -98,13 +96,15 @@ def process_submission(submission, index):
         comment.mod.distinguish(how="yes", sticky=True)
         comment.disable_inbox_replies()
         submission.mod.flair(flair_template_id=FLAIR_TEMPLATE_ID, text="/r/all")
-        discord_alert(
+        webhook = DiscordWebhook(
             DISCORD_WEBHOOK,
-            "nasabot",
-            f"Submission titled '{submission.title}' has hit /r/all with an index of {index}",
-            f"https://reddit.com{submission.permalink}",
-            notify=DISCORD_MOD_ID,
+            username="nasabot",
+            content=f"{DISCORD_MOD_ID}Submission titled "
+            "'[{submission.title}]({submission.permalink}'"
+            "has hit /r/all index of {index})",
         )
+        webhook.execute()
+
     except praw.exceptions.PRAWException as error:
         logging.warning(
             'Exception "%s" for id %s with title %s',

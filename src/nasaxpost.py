@@ -38,7 +38,7 @@ def main():
 
     subreddit = reddit.subreddit(USERSUB)
     logging.info("Entering main loop")
-    for submission in subreddit.stream.submissions(skip_existing=False):
+    for submission in subreddit.stream.submissions(skip_existing=True):
         # Don't crosspost if post was already crossposted from r/nasa
         if (
             hasattr(submission, "crosspost_parent")

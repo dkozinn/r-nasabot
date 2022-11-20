@@ -7,8 +7,8 @@ from os import system
 
 import praw
 import prawcore
+from discord_webhook import DiscordWebhook
 
-from nasautils.discord_alert import discord_alert
 
 SUB = "nasa"
 
@@ -40,7 +40,12 @@ def main():
         logging.info(
             "New post by %s: %s (%s)", submission.author, submission.title, reddit_url
         )
-        discord_alert(discord_webhook, "nasapostbot", submission.title, reddit_url)
+        webhook = DiscordWebhook(
+            discord_webhook,
+            username="nasapostbot",
+            content=f"[{submission.title}]]({reddit_url})", 
+        )
+        webhook.execute()
 
 
 if __name__ == "__main__":
