@@ -7,8 +7,7 @@ from os import system
 
 import praw
 import prawcore
-
-from nasautils.discord_alert import discord_alert
+from discord_webhook import DiscordWebhook
 
 try:
     from q_signals import Q_WHITE, send_signal
@@ -53,12 +52,13 @@ def main():
         logging.info(
             "New modqueue entry from %s: %s (%s)", submission.author, title, link
         )
-        discord_alert(
+        webhook = DiscordWebhook(
             discord_webhook,
-            "NASA Modqueue Bot",
-            f"Modqueue: {title} by {submission.author}",
-            link,
+            username="NASA Modqueue Bot",
+            content=f"Modqueue: [{title} by {submission.author}]({link})",
         )
+        webhook.execute()
+
         if GOT_Q:
             send_signal(
                 Q_WHITE,
