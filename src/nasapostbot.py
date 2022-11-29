@@ -43,7 +43,7 @@ def main():
         webhook = DiscordWebhook(
             discord_webhook,
             username="nasapostbot",
-            content=f"[{submission.title}]]({reddit_url})", 
+            content=f"[{submission.title}]({reddit_url})",
         )
         webhook.execute()
 
