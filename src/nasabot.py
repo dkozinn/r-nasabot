@@ -73,9 +73,11 @@ def main():
                 webhook = DiscordWebhook(
                     DISCORD_WEBHOOK,
                     username="nasabot",
-                    content=f"{DISCORD_MOD_ID}Submission titled "
-                    "'[{submission.title}]({submission.permalink}'"
-                    "has updated /r/all index of {index})",
+                    content=(
+                        f"{DISCORD_MOD_ID}Submission titled "
+                        f"'[{submission.title}](http://reddit.com{submission.permalink}' "
+                        f"has updated /r/all index of {index})"
+                    ),
                 )
                 webhook.execute()
 
@@ -99,9 +101,11 @@ def process_submission(submission, index):
         webhook = DiscordWebhook(
             DISCORD_WEBHOOK,
             username="nasabot",
-            content=f"{DISCORD_MOD_ID}Submission titled "
-            "'[{submission.title}]({submission.permalink}'"
-            "has hit /r/all index of {index})",
+            content=(
+                f"{DISCORD_MOD_ID}Submission titled "
+                f"'[{submission.title}](https://reddit.com{submission.permalink}' "
+                f"has hit /r/all index of {index})"
+            ),
         )
         webhook.execute()
 
