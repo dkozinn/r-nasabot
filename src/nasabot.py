@@ -74,9 +74,9 @@ def main():
                     DISCORD_WEBHOOK,
                     username="nasabot",
                     content=(
-                        f"{DISCORD_MOD_ID}Submission titled "
-                        f"'[{submission.title}](http://reddit.com{submission.permalink})' "
-                        f"has updated /r/all index of {index}"
+                        f"{DISCORD_MOD_ID}Submission titled"
+                        f" '[{submission.title}](http://reddit.com{submission.permalink})'"
+                        f" has updated /r/all index of {index}"
                     ),
                 )
                 webhook.execute()
@@ -102,9 +102,9 @@ def process_submission(submission, index):
             DISCORD_WEBHOOK,
             username="nasabot",
             content=(
-                f"{DISCORD_MOD_ID}Submission titled "
-                f"'[{submission.title}](https://reddit.com{submission.permalink})' "
-                f"has hit /r/all index of {index}"
+                f"{DISCORD_MOD_ID}Submission titled"
+                f" '[{submission.title}](https://reddit.com{submission.permalink})'"
+                f" has hit /r/all index of {index}"
             ),
         )
         webhook.execute()
