@@ -74,7 +74,7 @@ def main():
                     DISCORD_WEBHOOK,
                     username="nasabot",
                     content=(
-                        f"{DISCORD_MOD_ID}Submission titled"
+                        f"Submission titled"
                         f" '[{submission.title}](http://reddit.com{submission.permalink})'"
                         f" has updated /r/all index of {index}"
                     ),
