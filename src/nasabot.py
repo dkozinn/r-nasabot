@@ -101,7 +101,7 @@ def process_submission(submission, index):
             DISCORD_WEBHOOK,
             username="nasabot",
             content=(
-                f"{DISCORD_MOD_ID}Submission titled"
+                f"{DISCORD_MOD_ID} Submission titled"
                 f" '[{submission.title}](https://reddit.com{submission.permalink})'"
                 f" has hit /r/all index of {index}"
             ),
