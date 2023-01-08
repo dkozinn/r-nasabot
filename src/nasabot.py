@@ -3,12 +3,18 @@
 """Bot to flag posts that have hit /r/all on Reddit"""
 
 import logging
+from pathlib import Path
 
 import praw
 import praw.exceptions
 from discord_webhook import DiscordWebhook
 
+import dbstuff
+
 SUB = "nasa"
+DBDIR = str(Path.home())+"/"+SUB
+db = dbstuff.NasaDB(DBDIR)
+
 
 REPLY_TEMPLATE = (
     "If you're visiting here perhaps for the first time from /r/all, "
@@ -58,23 +64,18 @@ def main():
             str(index),
         )
         if submission.subreddit == SUB:
-            if (
-                submission.link_flair_text != "/r/all"
-            ):  # If flair doesn't say /r/all, process
+            oldindex = db.get_rank(submission.id)
+            if oldindex is None:    # we haven't seen this submission yet
                 process_submission(submission, index)
-            # If flair is /r/all but wrong template, process
-            elif (
-                getattr(submission, "link_flair_template_id", "NONE")
-                != FLAIR_TEMPLATE_ID
-            ):
-                process_submission(submission, index)
-            # Already processed, just notify of the new index number
-            else:
+                db.insert(submission.id,index)
+            elif oldindex > index:
+                db.update(submission.id,index)
+                print(submission.id,oldindex,index)
                 webhook = DiscordWebhook(
                     DISCORD_WEBHOOK,
                     username="nasabot",
                     content=(
-                        f"Updated /r/all index [{index}] for "
+                        f"Updated /r/all index to {index} for "
                         f" '[{submission.title}](http://reddit.com{submission.permalink})'"
                     ),
                 )
@@ -119,3 +120,4 @@ def process_submission(submission, index):
 
 if __name__ == "__main__":
     main()
+    del db
