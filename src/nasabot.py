@@ -12,7 +12,7 @@ from discord_webhook import DiscordWebhook
 import dbstuff
 
 SUB = "nasa"
-DBDIR = str(Path.home())+"/"+SUB
+DBDIR = str(Path.home()) + "/" + SUB
 db = dbstuff.NasaDB(DBDIR)
 
 
@@ -34,7 +34,6 @@ praw_debug_level = reddit.config.custom["praw_debugging"].upper()
 
 
 def main():
-
     """Main loop"""
 
     index = 0
@@ -65,12 +64,11 @@ def main():
         )
         if submission.subreddit == SUB:
             oldindex = db.get_rank(submission.id)
-            if oldindex is None:    # we haven't seen this submission yet
+            if oldindex is None:  # we haven't seen this submission yet
                 process_submission(submission, index)
-                db.insert(submission.id,index)
+                db.insert(submission.id, index)
             elif oldindex > index:
-                db.update(submission.id,index)
-                 print(submission.id,oldindex,index) # TODO: Remove this?
+                db.update(submission.id, index)
                 webhook = DiscordWebhook(
                     DISCORD_WEBHOOK,
                     username="nasabot",

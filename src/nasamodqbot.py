@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 """Bot to send new items in modqueue to Discord"""
 
 import logging
@@ -10,7 +11,7 @@ import prawcore
 from discord_webhook import DiscordWebhook
 
 try:
-    from q_signals import Q_WHITE, send_signal
+    from q_signals import Q_WHITE, send_signal  # type: ignore
 
     GOT_Q = True
 except ModuleNotFoundError:

@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-# pylint: disable=
 """ Define the NasaDB class """
 
 import sqlite3
