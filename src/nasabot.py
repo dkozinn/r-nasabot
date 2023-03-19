@@ -70,7 +70,7 @@ def main():
                 db.insert(submission.id,index)
             elif oldindex > index:
                 db.update(submission.id,index)
-                print(submission.id,oldindex,index)
+                 print(submission.id,oldindex,index) # TODO: Remove this?
                 webhook = DiscordWebhook(
                     DISCORD_WEBHOOK,
                     username="nasabot",
