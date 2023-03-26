@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# pylint: disable=bad-continuation
+
 """Bot to crosspost all posts from a specified user"""
 
 import logging

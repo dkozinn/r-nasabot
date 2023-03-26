@@ -163,3 +163,4 @@ Thumbs.db #thumbnail cache on Windows
 #misc
 local.notes
 **/test*.py
+**/approve*.py
