@@ -19,15 +19,15 @@ class NasaDB:
     def __del__(self):
         self.connection.close()
 
-    def insert(self, sub_id, rank):
+    def insert(self, sub_id, rank, timestamp=0):
         """Insert submission ID and rank into DB"""
-        self.cursor.execute("INSERT INTO posts VALUES (? , ?)", (sub_id, rank))
+        self.cursor.execute("INSERT INTO posts VALUES (?, ?, ?)", (sub_id, rank, timestamp))
         self.connection.commit()
 
-    def update(self, sub_id, rank):
+    def update(self, sub_id, rank, timestamp=0):
         """Update the rank for the submission"""
         self.cursor.execute(
-            "UPDATE posts SET rank=? WHERE submission=?", (rank, sub_id)
+            "UPDATE posts SET rank=?, ts=? WHERE submission=?", (rank, timestamp, sub_id)
         )
         self.connection.commit()
 
@@ -38,7 +38,7 @@ class NasaDB:
         ).fetchone()
         if result is not None:
             return result[0]
-        
+
         return None
 
 # Code below to be used for debug testing
