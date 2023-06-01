@@ -3,6 +3,7 @@
 """Bot to flag posts that have hit /r/all on Reddit"""
 
 import logging
+import time
 from pathlib import Path
 
 import praw
@@ -66,9 +67,9 @@ def main():
             oldindex = db.get_rank(submission.id)
             if oldindex is None:  # we haven't seen this submission yet
                 process_submission(submission, index)
-                db.insert(submission.id, index)
+                db.insert(submission.id, index, int(time.time()))
             elif oldindex > index:
-                db.update(submission.id, index)
+                db.update(submission.id, index, int(time.time()))
                 webhook = DiscordWebhook(
                     DISCORD_WEBHOOK,
                     username="nasabot",
