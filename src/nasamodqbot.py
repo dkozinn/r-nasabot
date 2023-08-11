@@ -3,6 +3,8 @@
 """Bot to send new items in modqueue to Discord"""
 
 import logging
+import logging.handlers
+
 import sys
 from os import system
 
@@ -43,7 +45,7 @@ def main():
 
 # Debug rate limiting
 
-    handler = logging.handlers.RotatingFileHandler('prawcore_log.txt', maxBytes=1024*1024*16, backupCount=5)
+    handler = logging.handlers.RotatingFileHandler('/var/log/debug/nasamodqbot-prawcore_log.txt', maxBytes=1024*1024*16, backupCount=5)
     logger = logging.getLogger("prawcore")
     logger.setLevel(logging.DEBUG)
     logger.addHandler(handler)
