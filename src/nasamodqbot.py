@@ -41,6 +41,13 @@ def main():
         logger.setLevel(praw_debug_level)
         logger.addHandler(handler)
 
+# Debug rate limiting
+
+    handler = logging.handlers.RotatingFileHandler('prawcore_log.txt', maxBytes=1024*1024*16, backupCount=5)
+    logger = logging.getLogger("prawcore")
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
+
     subreddit = reddit.subreddit(SUB)
     logging.info("Entering main loop")
 
