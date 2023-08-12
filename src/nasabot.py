@@ -3,6 +3,8 @@
 """Bot to flag posts that have hit /r/all on Reddit"""
 
 import logging
+import logging.handlers
+
 from pathlib import Path
 
 import praw
@@ -49,6 +51,11 @@ def main():
         logger = logging.getLogger(logger_name)
         logger.setLevel(praw_debug_level)
         logger.addHandler(handler)
+
+    handler = logging.handlers.RotatingFileHandler('/var/log/debug/nasabot-prawcore_log.txt', maxBytes=1024*1024*16, backupCount=5)
+    logger = logging.getLogger("prawcore")
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
 
     # Iterate through submissions, process if it's the right subreddit and
     # it either has no flair or it has flair not matching the template
