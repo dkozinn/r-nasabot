@@ -1,0 +1,13 @@
+[Unit]
+Description=nasajobsbot: Post new NASA jobs from usajobs.gov to r/NASAjobs
+Wants=nasajobsbot.timer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python /usr/local/bin/nasajobsbot.py
+User=david
+Environment="PYTHONPATH=/home/david/.local/lib/python-local"
+PassEnvironment=PYTHONPATH
+
+[Install]
+WantedBy=multi-user.target
