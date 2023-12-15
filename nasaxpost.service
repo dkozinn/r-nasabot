@@ -10,8 +10,8 @@ ExecStart=/usr/bin/python /usr/local/bin/nasaxpost.py
 ExecStopPost=/usr/local/bin/ntfy send "nasaxpost failed, Service Result=${SERVICE_RESULT}, Exit Code=${EXIT_CODE}, Exit Status=${EXIT_STATUS}"
 RestartSec=600
 Restart=always
-User=david
-Environment="PYTHONPATH=/home/david/.local/lib/python-local"
+User=USER
+Environment="PYTHONPATH=HOME/.local/lib/python-local"
 PassEnvironment=PYTHONPATH
 
 [Install]

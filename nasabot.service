@@ -5,8 +5,8 @@ Wants=nasabot.timer
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/python /usr/local/bin/nasabot.py
-User=david
-Environment="PYTHONPATH=/home/david/.local/lib/python-local"
+User=USER
+Environment="PYTHONPATH=HOME/.local/lib/python-local"
 PassEnvironment=PYTHONPATH
 
 [Install]
