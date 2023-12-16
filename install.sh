@@ -1,15 +1,18 @@
 #!/usr/bin/bash
-SYSTEM=/etc/systemd/system
-#SYSTEM=/tmp
-BIN=/usr/local/bin
-#BIN=/tmp/bin
-LIB=$HOME/.local/lib/python-local
-#LIB=/tmp/lib
-SYSTEMCTL=systemctl
-#SYSTEMCTL=echo
-LOGDIR=/etc/logrotate.d
-#LOGDIR=/tmp/logdir
+export SYSTEM=/etc/systemd/system
+#export SYSTEM=/tmp/test
+export BIN=/usr/local/bin
+#export BIN=/tmp/bin
+export LIB=$HOME/.local/lib/python-local
+#export LIB=/tmp/lib
+export SYSTEMCTL=systemctl
+#export SYSTEMCTL=echo
+export LOGDIR=/etc/logrotate.d
+#export LOGDIR=/tmp/logdir
 
+# Next two save the local context so running as sudo can find them
+export home=$HOME
+export user=$USER
 pip install --upgrade -r requirements.txt
 
 ./install-db.sh
@@ -21,17 +24,18 @@ done
 
 for service in $(cat services)
 do
-    sed "s@USER@$USER@;s@HOME@$HOME@" $service.service  > $SYSTEM/$service.service
-    [[ -f "$1".timer ]] && cp "$1".timer $SYSTEM
-    cp src/$service.py $BIN
+    export service
+    sudo -E bash -c "sed 's@USER@$user@;s@HOME@$user@' $service.service  > $SYSTEM/$service.service"
+    sudo -E bash -c "[[ -f $service.timer ]] && cp $service.timer $SYSTEM"
+    sudo -E cp src/$service.py $BIN
 done
 
 cp nasabot.logrotate $LOGDIR
 
-$SYSTEMCTL daemon-reload
+sudo $SYSTEMCTL daemon-reload
 for service in $(cat services)
 do
-    $SYSTEMCTL enable $service
-    $SYSTEMCTL restart $service
+    sudo $SYSTEMCTL enable $service
+    sudo $SYSTEMCTL restart $service
 done
 
