@@ -6,7 +6,7 @@ Requires=nasajobsbot.service
 
 [Timer]
 Unit=nasajobsbot.service
-OnCalendar=* *-*-* 06:00:00
+OnCalendar=*-*-* 06:00:00
 
 [Install]
 WantedBy=timers.target

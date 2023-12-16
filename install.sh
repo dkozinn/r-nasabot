@@ -24,15 +24,16 @@ for service in $(cat services)
 do
     export service
     sudo -E bash -c "sed 's@USER@$user@;s@HOME@$user@' $service.service  > $SYSTEM/$service.service"
-    sudo -E bash -c "[[ -f $service.timer ]] && cp $service.timer $SYSTEM"
-    sudo -E cp src/$service.py $BIN
+    [[ -f $service.timer ]] && sudo cp $service.timer $SYSTEM
+    sudo cp src/$service.py $BIN
 done
 
-sudo -E bash -c "cp nasabot.logrotate $LOGDIR"
+sudo cp nasabot.logrotate $LOGDIR
 
 sudo $SYSTEMCTL daemon-reload
 for service in $(cat services)
 do
+    [[ -f $service.timer ]] && service = $service.timer
     sudo $SYSTEMCTL enable $service
     sudo $SYSTEMCTL restart $service
 done
