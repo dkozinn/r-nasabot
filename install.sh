@@ -3,12 +3,12 @@ export SYSTEM=/etc/systemd/system
 #export SYSTEM=/tmp/test
 export BIN=/usr/local/bin
 #export BIN=/tmp/bin
-export LIB=$HOME/.local/lib/python-local
+export LIB=$HOME/.local/lib/python-local/nasautils
 #export LIB=/tmp/lib
-export SYSTEMCTL=systemctl
-#export SYSTEMCTL=echo
 export LOGDIR=/etc/logrotate.d
 #export LOGDIR=/tmp/logdir
+export SYSTEMCTL=systemctl
+#export SYSTEMCTL=echo
 
 # Next two save the local context so running as sudo can find them
 export home=$HOME
@@ -17,10 +17,8 @@ pip install --upgrade -r requirements.txt
 
 ./install-db.sh
 
-for utility in $(cat utilities)
-do
-    cp src/nasautils/$utility $LIB
-done
+mkdir -p $LIB
+cp -r src/nasautils/*.py $LIB
 
 for service in $(cat services)
 do
@@ -30,7 +28,7 @@ do
     sudo -E cp src/$service.py $BIN
 done
 
-cp nasabot.logrotate $LOGDIR
+sudo -E bash -c "cp nasabot.logrotate $LOGDIR"
 
 sudo $SYSTEMCTL daemon-reload
 for service in $(cat services)
