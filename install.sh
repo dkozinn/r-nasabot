@@ -23,17 +23,17 @@ cp -r src/nasautils/*.py $LIB
 for service in $(cat services)
 do
     export service
-    sudo -E bash -c "sed 's@USER@$user@;s@HOME@$user@' $service.service  > $SYSTEM/$service.service"
+    sudo -E bash -c "sed 's@USER@$user@;s@HOME@$home@' $service.service  > $SYSTEM/$service.service"
     [[ -f $service.timer ]] && sudo cp $service.timer $SYSTEM
     sudo cp src/$service.py $BIN
 done
 
-sudo cp nasabot.logrotate $LOGDIR
+sudo cp nasabot.logrotate $LOGDIR/nasabot
 
 sudo $SYSTEMCTL daemon-reload
 for service in $(cat services)
 do
-    [[ -f $service.timer ]] && service = $service.timer
+    [[ -f $service.timer ]] && service=$service.timer
     sudo $SYSTEMCTL enable $service
     sudo $SYSTEMCTL restart $service
 done

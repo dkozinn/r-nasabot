@@ -11,7 +11,5 @@
 		systemctl restart nasamodqbot
 		systemctl restart nasapostbot
 		systemctl restart nasaxpost
-		systemctl restart nasajobsbot
-		systemctl restart nasabot
 	endscript
 }

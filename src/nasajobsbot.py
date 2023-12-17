@@ -38,14 +38,17 @@ def main():
     results = fetch_jobs(
         reddit.config.custom["jobs_email"], reddit.config.custom["jobs_key"]
     )
-    subreddit.submit(
-        date.today().strftime("New usajobs.gov NASA postings as of %A %B %-d, %Y"),
-        flair_id="c753e058-9ac6-11ee-a880-9a87da1d6157",
-        flair_text="usajobs.gov",
-        selftext=results,
-        send_replies=False,
-    )
-    logging.info("Posted daily new jobs")
+    if len(results) > 0:
+        subreddit.submit(
+            date.today().strftime("New usajobs.gov NASA postings as of %A %B %-d, %Y"),
+            flair_id="c753e058-9ac6-11ee-a880-9a87da1d6157",
+            flair_text="usajobs.gov",
+            selftext=results,
+            send_replies=False,
+        )
+        logging.info("Posted daily new jobs")
+    else:
+        logging.info("No jobs found")
 
 
 if __name__ == "__main__":
