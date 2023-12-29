@@ -9,6 +9,7 @@ from os import system
 import praw
 import prawcore
 from discord_webhook import DiscordWebhook
+from nasautils.utilities import get_sub
 
 try:
     from q_signals import Q_WHITE, send_signal  # type: ignore
@@ -17,7 +18,7 @@ try:
 except ModuleNotFoundError:
     GOT_Q = False
 
-SUB = "nasa"
+SUB = get_sub()
 
 
 def main():
@@ -42,7 +43,7 @@ def main():
         logger.addHandler(handler)
 
     subreddit = reddit.subreddit(SUB)
-    logging.info("Entering main loop")
+    logging.info("Entering main loop for r/%s", SUB)
 
     for submission in subreddit.mod.stream.modqueue():
         try:
@@ -51,11 +52,11 @@ def main():
             title = f"Comment on post '{submission.link_title}'"
         link = f"https://reddit.com{submission.permalink}"
         logging.info(
-            "New modqueue entry from %s: %s (%s)", submission.author, title, link
+            "New modqueue entry in r/%s from %s: %s (%s)", SUB, submission.author, title, link
         )
         webhook = DiscordWebhook(
             discord_webhook,
-            username="NASA Modqueue Bot",
+            username=f"{SUB} Modqueue Bot",
             content=f"Modqueue: [{title} by {submission.author}]({link})",
         )
         webhook.execute()

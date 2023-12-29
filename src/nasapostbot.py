@@ -8,9 +8,10 @@ from os import system
 import praw
 import prawcore
 from discord_webhook import DiscordWebhook
+from nasautils.utilities import get_sub
 
 
-SUB = "nasa"
+SUB = get_sub()
 
 
 def main():
@@ -34,15 +35,15 @@ def main():
         logger.addHandler(handler)
 
     subreddit = reddit.subreddit(SUB)
-    logging.info("Entering main loop")
+    logging.info("Entering main loop for r/%s", SUB)
     for submission in subreddit.stream.submissions(skip_existing=True):
         reddit_url = "https://reddit.com" + submission.permalink
         logging.info(
-            "New post by %s: %s (%s)", submission.author, submission.title, reddit_url
+            "New post in r/%s by %s: %s (%s)", SUB, submission.author, submission.title, reddit_url
         )
         webhook = DiscordWebhook(
             discord_webhook,
-            username="nasapostbot",
+            username=f"{SUB} Post Bot",
             content=f"[{submission.title}]({reddit_url})",
         )
         webhook.execute()
