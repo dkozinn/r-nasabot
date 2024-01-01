@@ -1,9 +1,9 @@
 #!/usr/bin/python3
-"""Bot to send new post titles to Discord"""
+"""Bot to send newly posted NASA Jobs to r/NASAJobs"""
 
-from datetime import date
 import logging
 import sys
+from datetime import date
 from os import system
 
 import praw
