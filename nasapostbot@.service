@@ -1,0 +1,18 @@
+[Unit]
+Description=nasapostbot: Scan for new posts in /r/%I
+After = network.target
+StartLimitBurst=10
+StartLimitIntervalSec=7200
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/nasapostbot.py %I
+ExecStopPost=/usr/local/bin/ntfy send "nasapostbot failed for %I, Service Result=${SERVICE_RESULT}, Exit Code=${EXIT_CODE}, Exit Status=${EXIT_STATUS}"
+RestartSec=600
+Restart=always
+User=USER
+Environment="PYTHONPATH=HOME/.local/lib/python-local"
+PassEnvironment=PYTHONPATH
+
+[Install]
+WantedBy=multi-user.target
