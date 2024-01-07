@@ -6,12 +6,12 @@ export LIB=$HOME/.local/lib/python-local/nasautils
 export LOGDIR=/etc/logrotate.d
 export SYSTEMCTL=systemctl
 # Uncomment below for debug
-# export PIP=echo
-# export SYSTEM=/tmp/test
-# export BIN=/tmp/bin
-# export LIB=/tmp/lib
-# export LOGDIR=/tmp/logdir
-# export SYSTEMCTL=echo
+export PIP=echo
+export SYSTEM=/tmp/test
+export BIN=/tmp/bin
+export LIB=/tmp/lib
+export LOGDIR=/tmp/logdir
+export SYSTEMCTL=echo
 
 # Next two save the local context so running as sudo can find them
 export home=$HOME
@@ -40,8 +40,8 @@ do
     if [[ $service == *"@"* ]] ; then
         for subreddit in $(cat subreddits)
         do
-            sudo $SYSTEMCTL enable $service.$subreddit
-            sudo $SYSTEMCTL restart $service.$subreddit
+            sudo $SYSTEMCTL enable $service$subreddit
+            sudo $SYSTEMCTL restart $service$subreddit
         done
     else 
         sudo $SYSTEMCTL enable $service
