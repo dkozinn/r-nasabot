@@ -52,13 +52,25 @@ def main():
             title = f"Comment on post '{submission.link_title}'"
         link = f"https://reddit.com{submission.permalink}"
         logging.info(
-            "New modqueue entry in r/%s from %s: %s (%s)", SUB, submission.author, title, link
+            "New modqueue entry in r/%s from %s: %s (%s)",
+            SUB,
+            submission.author,
+            title,
+            link,
         )
         webhook = DiscordWebhook(
             discord_webhook,
-            username=f"{SUB} Modqueue Bot",
-            content=f"Modqueue: [{title} by {submission.author}]({link})",
+            username="Modqueue",
+            content=(
+                f"{SUB.upper()}: [{title}](<{link}>)"
+                f" by [{submission.author.name}](<https://reddit.com/u/{submission.author.name}>)"
+            ),
         )
+        # webhook = DiscordWebhook(
+        #     discord_webhook,
+        #     username=f"{SUB.upper()} Modqueue Bot",
+        #     content=f"Modqueue: [{title} by {submission.author}]({link})",
+        # )
         webhook.execute()
 
         if GOT_Q:
