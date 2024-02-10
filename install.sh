@@ -28,7 +28,8 @@ do
     export service
     sudo -E bash -c "sed 's@USER@$user@;s@HOME@$home@' $service.service  > $SYSTEM/$service.service"
     [[ -f $service.timer ]] && sudo cp $service.timer $SYSTEM
-    [[ -f $service.py ]] && sudo cp src/$service.py $BIN
+    service=${service//@/}	# Strip trailing @ from filename
+    [[ -f src/$service.py ]] && sudo cp src/$service.py $BIN
 done
 
 sudo cp nasabot.logrotate $LOGDIR/nasabot
