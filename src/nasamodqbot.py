@@ -58,20 +58,19 @@ def main():
             title,
             link,
         )
-        webhook = DiscordWebhook(
-            discord_webhook,
-            username="Modqueue",
-            content=(
-                f"{SUB.upper()}: [{title}](<{link}>)"
-                f" by [{submission.author.name}](<https://reddit.com/u/{submission.author.name}>)"
-            ),
-        )
-        # webhook = DiscordWebhook(
-        #     discord_webhook,
-        #     username=f"{SUB.upper()} Modqueue Bot",
-        #     content=f"Modqueue: [{title} by {submission.author}]({link})",
-        # )
-        webhook.execute()
+        try:
+            webhook = DiscordWebhook(
+                discord_webhook,
+                username="Modqueue",
+                content=(
+                    f"{SUB.upper()}: [{title}](<{link}>)"
+                    f" by [{submission.author.name}](<https://reddit.com/u/{submission.author.name}>)"
+                ),
+            )
+
+            webhook.execute()
+        except Exception as e:
+            logging.exception("Error sending to Discord: %s", str(e))
 
         if GOT_Q:
             send_signal(
