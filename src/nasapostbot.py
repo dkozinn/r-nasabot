@@ -41,12 +41,15 @@ def main():
         logging.info(
             "New post in r/%s by %s: %s (%s)", SUB, submission.author, submission.title, reddit_url
         )
-        webhook = DiscordWebhook(
-            discord_webhook,
-            username=f"{SUB} Post Bot",
-            content=f"[{submission.title}]({reddit_url})",
-        )
-        webhook.execute()
+        try:
+            webhook = DiscordWebhook(
+                discord_webhook,
+                username=f"{SUB} Post Bot",
+                content=f"[{submission.title}]({reddit_url})",
+            )
+            webhook.execute()
+        except Exception as e:  # pylint: disable=broad-except
+            logging.exception("Error sending to Discord: %s", str(e))
 
 
 if __name__ == "__main__":
