@@ -85,7 +85,7 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         sys.exit(0)
-    except prawcore.exceptions.ServerError:
+    except (prawcore.exceptions.ServerError, prawcore.exceptions.ResponseException):
         logging.exception("Reddit error")
         sys.exit(2)
     except Exception as error:  # pylint: disable=broad-except

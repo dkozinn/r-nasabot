@@ -200,7 +200,7 @@ pyrightconfig.json
 
 #misc
 local.notes
-**/test*.py
+#**/test*.py
 **/approve*.py
 .ignore
 .vscode
