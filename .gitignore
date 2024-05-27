@@ -204,3 +204,4 @@ local.notes
 **/approve*.py
 .ignore
 .vscode
+test*.py
