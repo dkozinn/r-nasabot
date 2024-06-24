@@ -38,7 +38,7 @@ class NasaDB:
         ).fetchone()
         if result is not None:
             return result[0]
-        
+
         return None
 
 # Code below to be used for debug testing
