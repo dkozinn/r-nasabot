@@ -21,7 +21,7 @@ except ModuleNotFoundError:
 SUB = get_sub()
 
 
-def main():
+def main() -> None:
     """Main loop"""
 
     reddit = praw.Reddit("nasamodqbot")
@@ -69,7 +69,7 @@ def main():
             )
 
             webhook.execute()
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             logging.exception("Error sending to Discord: %s", str(e))
 
         if GOT_Q:

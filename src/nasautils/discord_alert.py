@@ -36,7 +36,7 @@ def discord_alert(webhook, username, message, url, notify=None):
     }
     logging.debug("Posting message as %s: %s (%s)", username, message, url)
     try:
-        r = requests.post(webhook, json=data)
+        r = requests.post(webhook, json=data, timeout=30)
         r.raise_for_status()
 
         # Always wait at least x-ratelimit-reset-after seconds
