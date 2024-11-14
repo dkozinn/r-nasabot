@@ -12,7 +12,7 @@ from nasautils.utilities import get_sub
 
 
 SUB = get_sub()
-
+SUB = "nasatest"
 
 def main():
     """Main loop"""
@@ -45,7 +45,10 @@ def main():
             webhook = DiscordWebhook(
                 discord_webhook,
                 username=f"{SUB} Post Bot",
-                content=f"[{submission.title}]({reddit_url})",
+                content=(
+                    f"[{submission.title}]({reddit_url})"
+                    f" by [{submission.author.name}](<https://reddit.com/u/{submission.author.name}>)"
+                )
             )
             webhook.execute()
         except Exception as e:  # pylint: disable=broad-except
