@@ -12,7 +12,7 @@ from nasautils.utilities import get_sub
 
 
 SUB = get_sub()
-SUB = "nasatest"
+
 
 def main():
     """Main loop"""
