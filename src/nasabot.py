@@ -71,7 +71,8 @@ def main():
             elif oldindex > index:
                 db.update(submission.id, index, int(time.time()))
                 webhook = DiscordWebhook(
-                    DISCORD_WEBHOOK,
+                    url=DISCORD_WEBHOOK,
+                    rate_limit_retry=True,
                     username="nasabot",
                     content=(
                         f"Updated /r/all index to {index} for "
@@ -98,7 +99,8 @@ def process_submission(submission, index):
         comment.disable_inbox_replies()
         submission.mod.flair(flair_template_id=FLAIR_TEMPLATE_ID, text="/r/all")
         webhook = DiscordWebhook(
-            DISCORD_WEBHOOK,
+            url=DISCORD_WEBHOOK,
+            rate_limit_retry=True,
             username="nasabot",
             content=(
                 f"{DISCORD_MOD_ID} Submission titled"

@@ -60,7 +60,8 @@ def main() -> None:
         )
         try:
             webhook = DiscordWebhook(
-                discord_webhook,
+                url=discord_webhook,
+                rate_limit_retry=True,
                 username="Modqueue",
                 content=(
                     f"{SUB.upper()}: [{title}](<{link}>)"

@@ -43,7 +43,8 @@ def main():
         )
         try:
             webhook = DiscordWebhook(
-                discord_webhook,
+                url=discord_webhook,
+                rate_limit_retry=True,
                 username=f"{SUB} Post Bot",
                 content=(
                     f"[{submission.title}]({reddit_url})"
