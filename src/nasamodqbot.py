@@ -47,10 +47,13 @@ def main() -> None:
 
     for submission in subreddit.mod.stream.modqueue():
         try:
-            title = getattr(submission, "title")
+            title = f"Submission: {getattr(submission, 'title')}"
         except AttributeError:  # If no title, then we have a comment
-            title = f"Comment on post '{submission.link_title}'"
+            title = f"Comment on '{submission.link_title}'"
         link = f"https://reddit.com{submission.permalink}"
+
+        if len(submission.user_reports) > 0:
+            title = "User report for " + title
         logging.info(
             "New modqueue entry in r/%s from %s: %s (%s)",
             SUB,
