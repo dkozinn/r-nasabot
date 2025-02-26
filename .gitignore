@@ -205,3 +205,4 @@ local.notes
 .ignore
 .vscode
 test*.py
+.DS_Store
