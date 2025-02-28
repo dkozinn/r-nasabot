@@ -33,7 +33,7 @@ do
 done
 
 sudo cp nasabot.logrotate $LOGDIR/nasabot
-sudo cp dbstuff.py $BIN
+sudo cp src/dbstuff.py $BIN
 
 sudo $SYSTEMCTL daemon-reload
 for service in $(cat services)
