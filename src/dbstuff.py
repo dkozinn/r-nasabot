@@ -39,7 +39,7 @@ class NasaDB:
         if result is not None:
             return result[0]
         return None
-    
+
     def fetch_all(self):
         """Fetch entire contents of database"""
         return self.cursor.execute("SELECT * from posts")

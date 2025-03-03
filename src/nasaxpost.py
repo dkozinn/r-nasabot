@@ -18,7 +18,7 @@ def main():
     """Main loop"""
 
     # Use the same credentials as nasapostbot
-    reddit = praw.Reddit("nasapostbot", user_agent="r-nasaxpost:v0.01 (by /u/dkozinn)")
+    reddit = praw.Reddit("nasapostbot", user_agent="r-nasaxpost:v1.00 (by /u/dkozinn)")
     app_debug_level = reddit.config.custom["app_debugging"].upper()
     praw_debug_level = reddit.config.custom["praw_debugging"].upper()
 

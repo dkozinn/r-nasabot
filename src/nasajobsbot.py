@@ -17,7 +17,7 @@ SUB = "nasajobs"
 def main():
     """Main loop"""
 
-    reddit = praw.Reddit("nasajobsbot")
+    reddit = praw.Reddit("nasajobsbot", user_agent="r-nasajobsbot:v1.00 (by /u/dkozinn)")
     app_debug_level = reddit.config.custom["app_debugging"].upper()
     praw_debug_level = reddit.config.custom["praw_debugging"].upper()
     logging.basicConfig(
