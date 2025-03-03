@@ -24,7 +24,7 @@ SUB = get_sub()
 def main() -> None:
     """Main loop"""
 
-    reddit = praw.Reddit("nasamodqbot")
+    reddit = praw.Reddit("nasamodqbot", user_agent="r-nasamodqbot:v1.00 (by /u/dkozinn)")
     app_debug_level = reddit.config.custom["app_debugging"].upper()
     praw_debug_level = reddit.config.custom["praw_debugging"].upper()
     discord_webhook = reddit.config.custom["discord_webhook"]

@@ -27,7 +27,7 @@ REPLY_TEMPLATE = (
 FLAIR_TEMPLATE_ID = "7216c708-7c40-11e4-b13d-12313d052165"
 # FLAIR_TEMPLATE_ID="b37f60b8-74ac-11eb-9178-0e509773c193" #TOY
 
-reddit = praw.Reddit("nasabot")
+reddit = praw.Reddit("nasabot", user_agent="r-nasabot:v1.00 (by /u/dkozinn)")
 DISCORD_WEBHOOK = reddit.config.custom["discord_webhook"]
 DISCORD_MOD_ID = reddit.config.custom["discord_mod_id"]
 app_debug_level = reddit.config.custom["app_debugging"].upper()
