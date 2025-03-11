@@ -11,12 +11,6 @@ import prawcore
 from discord_webhook import DiscordWebhook
 from nasautils.utilities import get_sub
 
-try:
-    from q_signals import Q_WHITE, send_signal  # type: ignore
-
-    GOT_Q = True
-except ModuleNotFoundError:
-    GOT_Q = False
 
 SUB = get_sub()
 
@@ -24,7 +18,9 @@ SUB = get_sub()
 def main() -> None:
     """Main loop"""
 
-    reddit = praw.Reddit("nasamodqbot", user_agent="r-nasamodqbot:v1.00 (by /u/dkozinn)")
+    reddit = praw.Reddit(
+        "nasamodqbot", user_agent="r-nasamodqbot:v1.00 (by /u/dkozinn)"
+    )
     app_debug_level = reddit.config.custom["app_debugging"].upper()
     praw_debug_level = reddit.config.custom["praw_debugging"].upper()
     discord_webhook = reddit.config.custom["discord_webhook"]
@@ -75,13 +71,6 @@ def main() -> None:
             webhook.execute()
         except Exception as e:  # pylint: disable=broad-except
             logging.exception("Error sending to Discord: %s", str(e))
-
-        if GOT_Q:
-            send_signal(
-                Q_WHITE,
-                f"Modqueue: {title} by {submission.author}",
-                name="Modqueue post",
-            )
 
 
 if __name__ == "__main__":
