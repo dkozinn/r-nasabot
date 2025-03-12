@@ -21,7 +21,8 @@ jobs:
 
     - name: Push code to remote server
       run: |
-        git remote add remote_server ssh://${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{secrets.REPO_PATH}}
+        # git remote add remote_server ssh://${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{secrets.REPO_PATH}}
+        git remote add remote_server ssh://${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/ubuntu/nasa/src
         git push remote_server main
       env:
         GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no'
