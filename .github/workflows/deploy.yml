@@ -22,6 +22,8 @@ jobs:
     - name: Push code to remote server
       run: |
         git remote add remote_server ssh://${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{vars.REPO_PATH}}
+        git fetch remote_server main
+        git merge remote_server/main --no-edit
         git push remote_server main
       env:
         GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no'
