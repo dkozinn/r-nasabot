@@ -28,8 +28,8 @@ jobs:
       env:
         GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no'
 
-    # - name: Run deployment script on remote server
-    #   run: |
-    #     echo "${{ secrets.SSH_KEY }}" > key.pem
-    #     chmod 600 key.pem
-    #     ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} 'bash -s' < ${{ secrets.REMOTE_SCRIPT }}
+    - name: Run deployment script on remote server
+      run: |
+        echo "${{ secrets.SSH_KEY }}" > key.pem
+        chmod 600 key.pem
+        ssh -i key.pem -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} 'bash -s' < ${{ vars.REMOTE_SCRIPT }}
