@@ -21,7 +21,7 @@ jobs:
 
     - name: Push code to remote server
       run: |
-        git remote add remote_server ssh://${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{secrets.REPO_PATH}}
+        git remote add remote_server ssh://${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{vars.REPO_PATH}}
         git push remote_server main
       env:
         GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no'
