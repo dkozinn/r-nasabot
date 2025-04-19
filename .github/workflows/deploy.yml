@@ -19,15 +19,22 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_KEY }}
 
-    - name: Push code to remote server
+    - name: Pull latest code from remote server
       run: |
-        git remote add remote_server ssh://${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ vars.REPO_PATH }}
-        git push remote_server main
-      env:
-        GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no'
+        ssh -i key.pem -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} "cd ${{ vars.REPO_PATH }} && git pull origin main"
+    #     git clone ssh://${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ vars.REPO_PATH }} repo
+    #     cd repo
+    #     git pull origin main
+     
+    # - name: Push code to remote server
+    #   run: |
+    #     git remote add remote_server ssh://${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ vars.REPO_PATH }}
+    #     git push remote_server main
+    #   env:
+    #     GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no'
 
-    - name: Run deployment script on remote server
-      run: |
-        echo "${{ secrets.SSH_KEY }}" > key.pem
-        chmod 600 key.pem
-        ssh -i key.pem -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} 'bash -s' < ${{ vars.REMOTE_SCRIPT }}
+    # - name: Run deployment script on remote server
+    #   run: |
+    #     echo "${{ secrets.SSH_KEY }}" > key.pem
+    #     chmod 600 key.pem
+    #     ssh -i key.pem -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} 'bash -s' < ${{ vars.REMOTE_SCRIPT }}
