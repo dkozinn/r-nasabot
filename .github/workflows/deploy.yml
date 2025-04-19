@@ -25,7 +25,5 @@ jobs:
 
     - name: Run deployment script on remote server
       run: |
-        # echo "${{ secrets.SSH_KEY }}" > key.pem
-        # chmod 600 key.pem
         ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} "cd ${{ vars.REPO_PATH }} && ./${{ vars.REMOTE_SCRIPT }}"
     
