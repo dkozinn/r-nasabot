@@ -19,7 +19,7 @@ def main() -> None:
     """Main loop"""
 
     reddit = praw.Reddit(
-        "nasamodqbot", user_agent="r-nasamodqbot:v1.00 (by /u/dkozinn)"
+        "nasamodqbot", user_agent="r-nasamodqbot:v1.01 (by /u/dkozinn)"
     )
     app_debug_level = reddit.config.custom["app_debugging"].upper()
     praw_debug_level = reddit.config.custom["praw_debugging"].upper()
@@ -43,7 +43,7 @@ def main() -> None:
 
     for submission in subreddit.mod.stream.modqueue():
         try:
-            title = f"Submission: {getattr(submission, 'title')}"
+            title = f"Post: {getattr(submission, 'title')}"
         except AttributeError:  # If no title, then we have a comment
             title = f"Comment on '{submission.link_title}'"
         link = f"https://reddit.com{submission.permalink}"
