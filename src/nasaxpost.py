@@ -5,7 +5,7 @@
 import logging
 import sys
 import time
-from os import system, path
+from os import system, path, getcwd
 from pathlib import Path
 
 import praw
@@ -14,16 +14,17 @@ import prawcore
 
 SUB = "nasa"
 USERSUB = "u_nasa"
-XPOST_LIMIT = 1     # Max crossposts per interval
-XPOST_INTERVAL = 60   # Interval between crossposts in seconds
-PAUSE_INTERVAL = 60 * 5 # Time in seconds to wait to see if able to continue
+XPOST_LIMIT = 1  # Max crossposts per interval
+XPOST_INTERVAL = 60  # Interval between crossposts in seconds
+PAUSE_INTERVAL = 60 * 5  # Time in seconds to wait to see if able to continue
 PAUSE_FILE = "pause_xpost"
+
 
 def main():
     """Main loop"""
 
     # Use the same credentials as nasapostbot
-    reddit = praw.Reddit("nasapostbot", user_agent="r-nasaxpost:v1.00 (by /u/dkozinn)")
+    reddit = praw.Reddit("nasapostbot", user_agent="r-nasaxpost:v1.01 (by /u/dkozinn)")
     app_debug_level = reddit.config.custom["app_debugging"].upper()
     praw_debug_level = reddit.config.custom["praw_debugging"].upper()
 
@@ -93,9 +94,13 @@ def main():
                     reddit_url,
                 )
 
-        else: # Hit rate limit, time to bail
+        else:  # Hit rate limit, time to bail
             logging.info("Xpost rate limit hit, pausing")
             Path(PAUSE_FILE).touch()
+            system(
+                f"ntfy -o priority 0 -t 'nasaxpost hit rate limit' send 'check {getcwd()}/{PAUSE_FILE}'"
+            )
+
 
 if __name__ == "__main__":
     try:
