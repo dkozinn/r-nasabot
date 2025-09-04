@@ -4,7 +4,9 @@
 
 import logging
 import sys
-from os import system
+import time
+from os import system, path
+from pathlib import Path
 
 import praw
 import praw.exceptions
@@ -12,7 +14,10 @@ import prawcore
 
 SUB = "nasa"
 USERSUB = "u_nasa"
-
+XPOST_LIMIT = 1     # Max crossposts per interval
+XPOST_INTERVAL = 60   # Interval between crossposts in seconds
+PAUSE_INTERVAL = 60 * 5 # Time in seconds to wait to see if able to continue
+PAUSE_FILE = "pause_xpost"
 
 def main():
     """Main loop"""
@@ -38,51 +43,59 @@ def main():
 
     subreddit = reddit.subreddit(USERSUB)
     logging.info("Entering main loop")
+    last_xpost_time = 0
     for submission in subreddit.stream.submissions(skip_existing=True):
-        # Don't crosspost if post was already crossposted from r/nasa
-        if (
-            hasattr(submission, "crosspost_parent")
-            and reddit.submission(
-                reddit.submission(submission.crosspost_parent.split("_")[1])
-            ).subreddit
-            == "nasa"
-        ):
-            reddit_url = "https://reddit.com" + submission.permalink
-            logging.info(
-                "Did not re-crosspost '%s' from %s at %s",
-                submission.title,
-                submission.author,
-                reddit_url,
-            )
-        else:
-            try:
-                cross_post = submission.crosspost(
-                    SUB,
-                    flair_id="0f2362b2-7fae-11e3-bed4-22000aa47206",
-                    send_replies=False,
+        while path.exists(PAUSE_FILE):
+            time.sleep(PAUSE_INTERVAL)
+        if time.time() - last_xpost_time >= XPOST_INTERVAL:
+            last_xpost_time = time.time()
+            # Don't crosspost if post was already crossposted from r/nasa
+            if (
+                hasattr(submission, "crosspost_parent")
+                and reddit.submission(
+                    reddit.submission(submission.crosspost_parent.split("_")[1])
+                ).subreddit
+                == "nasa"
+            ):
+                reddit_url = "https://reddit.com" + submission.permalink
+                logging.info(
+                    "Did not re-crosspost '%s' from %s at %s",
+                    submission.title,
+                    submission.author,
+                    reddit_url,
                 )
-            except praw.exceptions.RedditAPIException as exception:
-                xpost_error = False
-                for subexception in exception.items:
-                    if subexception.error_type == "INVALID_CROSSPOST_THING":
-                        xpost_error = True
-                        break
-                if xpost_error:
-                    logging.warning(
-                        "Attempt to crosspost http://reddit.com%s failed, skipping",
-                        submission.permalink,
+            else:
+                try:
+                    cross_post = submission.crosspost(
+                        SUB,
+                        flair_id="0f2362b2-7fae-11e3-bed4-22000aa47206",
+                        send_replies=False,
                     )
-                    continue
-                raise
+                except praw.exceptions.RedditAPIException as exception:
+                    xpost_error = False
+                    for subexception in exception.items:
+                        if subexception.error_type == "INVALID_CROSSPOST_THING":
+                            xpost_error = True
+                            break
+                    if xpost_error:
+                        logging.warning(
+                            "Attempt to crosspost http://reddit.com%s failed, skipping",
+                            submission.permalink,
+                        )
+                        continue
+                    raise
 
-            reddit_url = "https://reddit.com" + cross_post.permalink
-            logging.info(
-                "Cross-posted '%s' from %s at %s",
-                cross_post.title,
-                cross_post.author,
-                reddit_url,
-            )
+                reddit_url = "https://reddit.com" + cross_post.permalink
+                logging.info(
+                    "Cross-posted '%s' from %s at %s",
+                    cross_post.title,
+                    cross_post.author,
+                    reddit_url,
+                )
 
+        else: # Hit rate limit, time to bail
+            logging.info("Xpost rate limit hit, pausing")
+            Path(PAUSE_FILE).touch()
 
 if __name__ == "__main__":
     try:
