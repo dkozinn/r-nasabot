@@ -43,7 +43,7 @@ def main():
         logger.addHandler(handler)
 
     subreddit = reddit.subreddit(USERSUB)
-    logging.info("Entering main loop")
+    logging.info("Entering main loop in %s", getcwd())
     last_xpost_time = 0
     for submission in subreddit.stream.submissions(skip_existing=True):
         while path.exists(PAUSE_FILE):

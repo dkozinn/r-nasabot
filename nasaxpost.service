@@ -11,6 +11,7 @@ ExecStopPost=/usr/local/bin/ntfy send "nasaxpost failed, Service Result=${SERVIC
 RestartSec=600
 Restart=always
 User=USER
+WorkingDirectory=~
 Environment="PYTHONPATH=HOME/.local/lib/python-local"
 PassEnvironment=PYTHONPATH
 
