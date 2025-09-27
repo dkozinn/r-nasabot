@@ -14,9 +14,9 @@ import prawcore
 
 SUB = "nasa"
 USERSUB = "u_nasa"
-XPOST_LIMIT = 1  # Max crossposts per interval
 XPOST_INTERVAL = 60  # Interval between crossposts in seconds
 PAUSE_INTERVAL = 60 * 5  # Time in seconds to wait to see if able to continue
+MAX_AGE = 3600      # Don't post if creation >= this long
 PAUSE_FILE = "pause_xpost"
 
 
@@ -46,8 +46,6 @@ def main():
     logging.info("Entering main loop in %s", getcwd())
     last_xpost_time = 0
     for submission in subreddit.stream.submissions(skip_existing=True):
-        while path.exists(PAUSE_FILE):
-            time.sleep(PAUSE_INTERVAL)
         if time.time() - last_xpost_time >= XPOST_INTERVAL:
             last_xpost_time = time.time()
             # Don't crosspost if post was already crossposted from r/nasa
@@ -56,14 +54,16 @@ def main():
                 and reddit.submission(
                     reddit.submission(submission.crosspost_parent.split("_")[1])
                 ).subreddit
-                == "nasa"
+                == "nasa" or
+                time.time() - submission.created_utc > MAX_AGE
             ):
                 reddit_url = "https://reddit.com" + submission.permalink
                 logging.info(
-                    "Did not re-crosspost '%s' from %s at %s",
+                    "Did not re-crosspost '%s' from %s at %s created on %s",
                     submission.title,
                     submission.author,
                     reddit_url,
+                    time.ctime(submission.created_utc),
                 )
             else:
                 try:
@@ -100,6 +100,8 @@ def main():
             system(
                 f"ntfy -o priority 0 -t 'nasaxpost hit rate limit' send 'check {getcwd()}/{PAUSE_FILE}'"
             )
+            while path.exists(PAUSE_FILE):
+                time.sleep(PAUSE_INTERVAL)
 
 
 if __name__ == "__main__":
