@@ -22,11 +22,16 @@ def fetch_jobs(email: str, key: str):
 
     Returns:
         Markdown formatted string with job information
+
+    Raises:
+        HTTPError if requests.get() fails
+        
     """
 
     headers = connect(email, key)
     url = BASE_URL + "Organization=NN&DatePosted=1&Fields=Min&ResultsPerPage=50"
     resp = requests.get(url, headers=headers, timeout=30)
+    resp.raise_for_status()     # Intentionally not caught here
     data = resp.json()
     item_count = data["SearchResult"]["SearchResultCount"]
     result = ""

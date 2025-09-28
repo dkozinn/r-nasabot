@@ -5,6 +5,7 @@ import logging
 import sys
 from datetime import date
 from os import system
+from requests.exceptions import HTTPError
 
 import praw
 import prawcore
@@ -61,6 +62,10 @@ if __name__ == "__main__":
         sys.exit(2)
     except praw.exceptions.RedditAPIException:
         logging.exception("Reddit API Exception")
+    except HTTPError as error:
+        logging.exception("HTTPError: %s", error )
+        system("ntfy -o priority 0 -t 'nasajobs HTTPError' send '" + str(error) + "'")
+        sys.exit(0)
     except Exception as error:  # pylint: disable=broad-except
         logging.exception("Unexpected error")
         system("ntfy -o priority 1 -t 'nasajobsbot crashed' send '" + str(error) + "'")
