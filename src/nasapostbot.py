@@ -3,6 +3,7 @@
 
 import logging
 import sys
+import time
 from os import system
 
 import praw
@@ -12,6 +13,7 @@ from nasautils.utilities import get_sub
 
 
 SUB = get_sub()
+MAX_AGE = 3600  #3600 seconds = 1 hour
 
 
 def main():
@@ -38,22 +40,31 @@ def main():
     logging.info("Entering main loop for r/%s", SUB)
     for submission in subreddit.stream.submissions(skip_existing=True):
         reddit_url = "https://reddit.com" + submission.permalink
-        logging.info(
-            "New post in r/%s by %s: %s (%s)", SUB, submission.author, submission.title, reddit_url
+        if time.time() - submission.created_utc > MAX_AGE:
+            logging.warning(
+            "Old post ignored: '%s' from %s at %s created on %s",
+            submission.title,
+            submission.author,
+            reddit_url,
+            time.ctime(submission.created_utc),
         )
-        try:
-            webhook = DiscordWebhook(
-                url=discord_webhook,
-                rate_limit_retry=True,
-                username=f"{SUB} Post Bot",
-                content=(
-                    f"[{submission.title}]({reddit_url})"
-                    f" by [{submission.author.name}](<https://reddit.com/u/{submission.author.name}>)"
-                )
+        else:
+            logging.info(
+                "New post in r/%s by %s: %s (%s)", SUB, submission.author, submission.title, reddit_url
             )
-            webhook.execute()
-        except Exception as e:  # pylint: disable=broad-except
-            logging.exception("Error sending to Discord: %s", str(e))
+            try:
+                webhook = DiscordWebhook(
+                    url=discord_webhook,
+                    rate_limit_retry=True,
+                    username=f"{SUB} Post Bot",
+                    content=(
+                        f"[{submission.title}]({reddit_url})"
+                        f" by [{submission.author.name}](<https://reddit.com/u/{submission.author.name}>)"
+                    )
+                )
+                webhook.execute()
+            except Exception as e:  # pylint: disable=broad-except
+                logging.exception("Error sending to Discord: %s", str(e))
 
 
 if __name__ == "__main__":
