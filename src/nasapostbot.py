@@ -9,11 +9,11 @@ from os import system
 import praw
 import prawcore
 from discord_webhook import DiscordWebhook
+
 from nasautils.utilities import get_sub
 
-
 SUB = get_sub()
-MAX_AGE = 3600  #3600 seconds = 1 hour
+MAX_AGE = 3600 * 24  # 24 hours to allow for modqueue
 
 
 def main():

@@ -5,7 +5,6 @@ from time import sleep
 import requests
 from requests.exceptions import HTTPError
 
-
 # noqa: E501
 
 

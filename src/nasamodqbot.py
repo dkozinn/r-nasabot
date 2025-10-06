@@ -9,8 +9,8 @@ from os import system
 import praw
 import prawcore
 from discord_webhook import DiscordWebhook
-from nasautils.utilities import get_sub
 
+from nasautils.utilities import get_sub
 
 SUB = get_sub()
 

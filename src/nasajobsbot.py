@@ -5,10 +5,10 @@ import logging
 import sys
 from datetime import date
 from os import system
-from requests.exceptions import HTTPError
 
 import praw
 import prawcore
+from requests.exceptions import HTTPError
 
 from nasautils.fetch_jobs import fetch_jobs
 
