@@ -11,6 +11,7 @@ import prawcore
 from discord_webhook import DiscordWebhook
 
 from nasautils.utilities import get_sub
+import request_debug
 
 SUB = get_sub()
 MAX_AGE = 3600 * 24  # 24 hours to allow for modqueue
@@ -19,7 +20,8 @@ MAX_AGE = 3600 * 24  # 24 hours to allow for modqueue
 def main():
     """Main loop"""
 
-    reddit = praw.Reddit("nasapostbot", user_agent="r-nasapostbot:v1.00 (by /u/dkozinn)")
+    reddit = praw.Reddit("nasapostbot", user_agent="r-nasapostbot:v1.00 (by /u/dkozinn)",
+                         requestor_class=request_debug.JSONDebugRequestor)
     app_debug_level = reddit.config.custom["app_debugging"].upper()
     praw_debug_level = reddit.config.custom["praw_debugging"].upper()
     discord_webhook = reddit.config.custom["discord_webhook"]
@@ -49,6 +51,7 @@ def main():
             time.ctime(submission.created_utc),
         )
         else:
+            break
             logging.info(
                 "New post in r/%s by %s: %s (%s)", SUB, submission.author, submission.title, reddit_url
             )

@@ -25,7 +25,7 @@ def fetch_jobs(email: str, key: str):
 
     Raises:
         HTTPError if requests.get() fails
-        
+
     """
 
     headers = connect(email, key)

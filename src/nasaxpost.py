@@ -11,6 +11,8 @@ import praw
 import praw.exceptions
 import prawcore
 
+import request_debug
+
 SUB = "nasa"
 USERSUB = "u_nasa"
 MAX_AGE = 3600  # Don't post if creation >= this long
@@ -20,7 +22,8 @@ def main():
     """Main loop"""
 
     # Use the same credentials as nasapostbot
-    reddit = praw.Reddit("nasapostbot", user_agent="r-nasaxpost:v1.01 (by /u/dkozinn)")
+    reddit = praw.Reddit("nasapostbot", user_agent="r-nasaxpost:v1.01 (by /u/dkozinn)",
+                         requestor_class=request_debug.JSONDebugRequestor)
     app_debug_level = reddit.config.custom["app_debugging"].upper()
     praw_debug_level = reddit.config.custom["praw_debugging"].upper()
 
@@ -60,6 +63,7 @@ def main():
             )
         else:
             try:
+                break
                 cross_post = submission.crosspost(
                     SUB,
                     flair_id="0f2362b2-7fae-11e3-bed4-22000aa47206",
