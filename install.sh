@@ -5,7 +5,7 @@ export BIN=/usr/local/bin
 export LIB=$HOME/.local/lib/python-local/nasautils
 export LOGDIR=/etc/logrotate.d
 export SYSTEMCTL=systemctl
-export VENVDIR=$HOME/nasa
+export VENVDIR=$HOME/nasa/.venv
 export WHICHPYTHON=$VENVDIR/bin/python
 
 # Execute overrides if BOTDEBUG is set and not empty
@@ -17,7 +17,7 @@ if [ -n "$BOTDEBUG" ]; then
     export LIB=/tmp/lib
     export LOGDIR=/tmp/logdir
     export SYSTEMCTL=echo
-    export VENVDIR=/tmp/nasa
+    export VENVDIR=/tmp/nasa/.venv
     export WHICHPYTHON=$VENVDIR/bin/python
     mkdir -p $SYSTEM $BIN $LIB $LOGDIR $VENVDIR
 fi
@@ -27,8 +27,8 @@ export home=$HOME
 export user=$USER
 export whichpython=$WHICHPYTHON
 
-python -m venv $VENVDIR/.venv
-source $VENVDIR/.venv/bin/activate
+python -m venv $VENVDIR
+source $VENVDIR/bin/activate
 
 $PIP install --upgrade -r requirements.txt
 
