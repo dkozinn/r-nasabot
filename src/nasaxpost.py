@@ -11,7 +11,7 @@ import praw
 import praw.exceptions
 import prawcore
 
-import request_debug
+from test_praw_debug import PRAWDebugger
 
 SUB = "nasa"
 USERSUB = "u_nasa"
@@ -21,75 +21,87 @@ MAX_AGE = 3600  # Don't post if creation >= this long
 def main():
     """Main loop"""
 
-    # Use the same credentials as nasapostbot
-    reddit = praw.Reddit("nasapostbot", user_agent="r-nasaxpost:v1.01 (by /u/dkozinn)",
-                         requestor_class=request_debug.JSONDebugRequestor)
-    app_debug_level = reddit.config.custom["app_debugging"].upper()
-    praw_debug_level = reddit.config.custom["praw_debugging"].upper()
+    try:
+        # Use the same credentials as nasapostbot
+        debugger = PRAWDebugger(praw.Reddit("nasapostbot"), cassette_dir="/big/xpost")
+        reddit = debugger.reddit
+            # reddit = praw.Reddit("nasapostbot", user_agent="r-nasaxpost:v1.01 (by /u/dkozinn)",
+        #                      requestor_class=request_debug.JSONDebugRequestor)
+        app_debug_level = reddit.config.custom["app_debugging"].upper()
+        praw_debug_level = reddit.config.custom["praw_debugging"].upper()
 
-    logging.basicConfig(
-        level=app_debug_level,
-        filename="/var/log/nasabot.log",
-        format="%(asctime)s %(levelname)s - %(module)s:"
-        "%(funcName)s:%(lineno)d — %(message)s",
-        datefmt="%c",
-    )
-    handler = logging.StreamHandler()
-    handler.setLevel(praw_debug_level)
-    for logger_name in ("praw", "prawcore"):
-        logger = logging.getLogger(logger_name)
-        logger.setLevel(praw_debug_level)
-        logger.addHandler(handler)
+        logging.basicConfig(
+            level=app_debug_level,
+            filename="/var/log/nasabot.log",
+            format="%(asctime)s %(levelname)s - %(module)s:"
+            "%(funcName)s:%(lineno)d — %(message)s",
+            datefmt="%c",
+        )
+        handler = logging.StreamHandler()
+        handler.setLevel(praw_debug_level)
+        for logger_name in ("praw", "prawcore"):
+            logger = logging.getLogger(logger_name)
+            logger.setLevel(praw_debug_level)
+            logger.addHandler(handler)
 
-    subreddit = reddit.subreddit(USERSUB)
-    logging.info("Entering main loop")
-    for submission in subreddit.stream.submissions(skip_existing=True):
-        # Don't crosspost if post was already crossposted from r/nasa or is too old
-        if (
-            hasattr(submission, "crosspost_parent")
-            and reddit.submission(
-                reddit.submission(submission.crosspost_parent.split("_")[1])
-            ).subreddit
-            == "nasa"
-            or time.time() - submission.created_utc > MAX_AGE
+        subreddit = reddit.subreddit(USERSUB)
+        logging.info("Entering main loop")
+        for submission in debugger.stream (
+                subreddit.stream.submissions(skip_existing=True)
         ):
-            reddit_url = "https://reddit.com" + submission.permalink
-            logging.warning(
-                "Did not re-crosspost '%s' from %s at %s created on %s",
-                submission.title,
-                submission.author,
-                reddit_url,
-                time.ctime(submission.created_utc),
-            )
-        else:
-            try:
-                break
-                cross_post = submission.crosspost(
-                    SUB,
-                    flair_id="0f2362b2-7fae-11e3-bed4-22000aa47206",
-                    send_replies=False,
+            # Don't crosspost if post was already crossposted from r/nasa or is too old
+            if (
+                hasattr(submission, "crosspost_parent")
+                and reddit.submission(
+                    reddit.submission(submission.crosspost_parent.split("_")[1])
+                ).subreddit
+                == "nasa"
+                or time.time() - submission.created_utc > MAX_AGE
+            ):
+                reddit_url = "https://reddit.com" + submission.permalink
+                logging.warning(
+                    "Did not re-crosspost '%s' from %s at %s created on %s",
+                    submission.title,
+                    submission.author,
+                    reddit_url,
+                    time.ctime(submission.created_utc),
                 )
-            except praw.exceptions.RedditAPIException as exception:
-                xpost_error = False
-                for subexception in exception.items:
-                    if subexception.error_type == "INVALID_CROSSPOST_THING":
-                        xpost_error = True
-                        break
-                if xpost_error:
-                    logging.warning(
-                        "Attempt to crosspost http://reddit.com%s failed, skipping",
-                        submission.permalink,
+            else:
+                try:
+                    cross_post = submission.crosspost(
+                        SUB,
+                        flair_id="0f2362b2-7fae-11e3-bed4-22000aa47206",
+                        send_replies=False,
                     )
-                    continue
-                raise
+                except praw.exceptions.RedditAPIException as exception:
+                    xpost_error = False
+                    for subexception in exception.items:
+                        if subexception.error_type == "INVALID_CROSSPOST_THING":
+                            xpost_error = True
+                            break
+                    if xpost_error:
+                        logging.warning(
+                            "Attempt to crosspost http://reddit.com%s failed, skipping",
+                            submission.permalink,
+                        )
+                        continue
+                    raise
 
-            reddit_url = "https://reddit.com" + cross_post.permalink
-            logging.info(
-                "Cross-posted '%s' from %s at %s",
-                cross_post.title,
-                cross_post.author,
-                reddit_url,
-            )
+                reddit_url = "https://reddit.com" + cross_post.permalink
+                logging.info(
+                    "Cross-posted '%s' from %s at %s",
+                    cross_post.title,
+                    cross_post.author,
+                    reddit_url,
+                )
+    except KeyboardInterrupt:
+        debugger.stop()
+        sys.exit(0)
+    except Exception as error: #pylint: disable=broad-except
+        debugger.stop()
+        print(error)
+        sys.exit(0)
+
 
 
 if __name__ == "__main__":
@@ -102,5 +114,6 @@ if __name__ == "__main__":
         sys.exit(2)
     except Exception as error:  # pylint: disable=broad-except
         logging.exception("Unexpected error")
-        system("ntfy -o priority 1 -t 'nasaxpost crashed' send '" + str(error) + "'")
+        # system("ntfy -o priority 1 -t 'nasaxpost crashed' send '" + str(error) + "'")
+        print(error)
         sys.exit(1)

@@ -1,7 +1,6 @@
 import json
 import requests
 from prawcore import Requestor
-from praw import Reddit
 
 
 class JSONDebugRequestor(Requestor):
