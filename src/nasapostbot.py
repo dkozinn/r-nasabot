@@ -19,7 +19,9 @@ MAX_AGE = 3600 * 24  # 24 hours to allow for modqueue
 def main():
     """Main loop"""
 
-    reddit = praw.Reddit("nasapostbot", user_agent="r-nasapostbot:v1.00 (by /u/dkozinn)")
+    reddit = praw.Reddit(
+        "nasapostbot", user_agent="r-nasapostbot:v1.00 (by /u/dkozinn)"
+    )
     app_debug_level = reddit.config.custom["app_debugging"].upper()
     praw_debug_level = reddit.config.custom["praw_debugging"].upper()
     discord_webhook = reddit.config.custom["discord_webhook"]
@@ -42,15 +44,19 @@ def main():
         reddit_url = "https://reddit.com" + submission.permalink
         if time.time() - submission.created_utc > MAX_AGE:
             logging.warning(
-            "Old post ignored: '%s' from %s at %s created on %s",
-            submission.title,
-            submission.author,
-            reddit_url,
-            time.ctime(submission.created_utc),
-        )
+                "Old post ignored: '%s' from %s at %s created on %s",
+                submission.title,
+                submission.author,
+                reddit_url,
+                time.ctime(submission.created_utc),
+            )
         else:
             logging.info(
-                "New post in r/%s by %s: %s (%s)", SUB, submission.author, submission.title, reddit_url
+                "New post in r/%s by %s: %s (%s)",
+                SUB,
+                submission.author,
+                submission.title,
+                reddit_url,
             )
             try:
                 webhook = DiscordWebhook(
@@ -60,7 +66,7 @@ def main():
                     content=(
                         f"[{submission.title}]({reddit_url})"
                         f" by [{submission.author.name}](<https://reddit.com/u/{submission.author.name}>)"
-                    )
+                    ),
                 )
                 webhook.execute()
             except Exception as e:  # pylint: disable=broad-except

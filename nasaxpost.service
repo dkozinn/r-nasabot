@@ -6,13 +6,13 @@ StartLimitIntervalSec=7200
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python /usr/local/bin/nasaxpost.py
+ExecStart=#WHICHPYTHON# /usr/local/bin/nasaxpost.py
 ExecStopPost=/usr/local/bin/ntfy send "nasaxpost failed, Service Result=${SERVICE_RESULT}, Exit Code=${EXIT_CODE}, Exit Status=${EXIT_STATUS}"
 RestartSec=600
 Restart=always
-User=USER
+User=#USER#
 WorkingDirectory=~
-Environment="PYTHONPATH=HOME/.local/lib/python-local"
+Environment="PYTHONPATH=#HOME#/.local/lib/python-local"
 PassEnvironment=PYTHONPATH
 
 [Install]

@@ -5,17 +5,31 @@ export BIN=/usr/local/bin
 export LIB=$HOME/.local/lib/python-local/nasautils
 export LOGDIR=/etc/logrotate.d
 export SYSTEMCTL=systemctl
-# Uncomment below for debug
-# export PIP=echo
-# export SYSTEM=/tmp/test
-# export BIN=/tmp/bin
-# export LIB=/tmp/lib
-# export LOGDIR=/tmp/logdir
-# export SYSTEMCTL=echo
+export VENVDIR=$HOME/nasa
+export WHICHPYTHON=$VENVDIR/bin/python
 
-# Next two save the local context so running as sudo can find them
+# Execute overrides if BOTDEBUG is set and not empty
+# run with:  BOTDEBUG=true ./install.sh
+if [ -n "$BOTDEBUG" ]; then
+    export PIP=echo
+    export SYSTEM=/tmp/system
+    export BIN=/tmp/bin
+    export LIB=/tmp/lib
+    export LOGDIR=/tmp/logdir
+    export SYSTEMCTL=echo
+    export VENVDIR=/tmp/nasa
+    export WHICHPYTHON=$VENVDIR/bin/python
+    mkdir -p $SYSTEM $BIN $LIB $LOGDIR $VENVDIR
+fi
+
+# Next three save the local context so running as sudo can find them
 export home=$HOME
 export user=$USER
+export whichpython=$WHICHPYTHON
+
+python -m venv $VENVDIR/.venv
+source $VENVDIR/.venv/bin/activate
+
 $PIP install --upgrade -r requirements.txt
 
 ./install-db.sh
@@ -26,7 +40,7 @@ cp -r src/nasautils/*.py $LIB
 for service in $(cat services)
 do
     export service
-    sudo -E bash -c "sed 's@USER@$user@;s@HOME@$home@' $service.service  > $SYSTEM/$service.service"
+    sudo -E bash -c "sed 's@#USER#@$user@;s@#HOME#@$home@;s@#WHICHPYTHON#@$whichpython@' $service.service  > $SYSTEM/$service.service"
     [[ -f $service.timer ]] && sudo cp $service.timer $SYSTEM
     service=${service//@/}	# Strip trailing @ from filename
     [[ -f src/$service.py ]] && sudo cp src/$service.py $BIN
