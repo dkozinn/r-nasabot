@@ -8,6 +8,7 @@ from pathlib import Path
 
 import praw
 import praw.exceptions
+import prawcore.exceptions
 from discord_webhook import DiscordWebhook
 
 import dbstuff
@@ -54,32 +55,35 @@ def main():
     # Iterate through submissions, process if it's the right subreddit and
     # it either has no flair or it has flair not matching the template
 
-    for submission in reddit.subreddit("all").hot(limit=250):
-        index += 1
-        logging.debug(
-            "Post in /r/%s:%s/%s index=%s",
-            str(submission.subreddit),
-            submission.title,
-            submission.id,
-            str(index),
-        )
-        if submission.subreddit == SUB:
-            oldindex = db.get_rank(submission.id)
-            if oldindex is None:  # we haven't seen this submission yet
-                process_submission(submission, index)
-                db.insert(submission.id, index, int(time.time()))
-            elif oldindex > index:
-                db.update(submission.id, index, int(time.time()))
-                webhook = DiscordWebhook(
-                    url=DISCORD_WEBHOOK,
-                    rate_limit_retry=True,
-                    username="nasabot",
-                    content=(
-                        f"Updated /r/all index to {index} for "
-                        f" '[{submission.title}](http://reddit.com{submission.permalink})'"
-                    ),
-                )
-                webhook.execute()
+    try:
+        for submission in reddit.subreddit("all").hot(limit=250):
+            index += 1
+            logging.debug(
+                "Post in /r/%s:%s/%s index=%s",
+                str(submission.subreddit),
+                submission.title,
+                submission.id,
+                str(index),
+            )
+            if submission.subreddit == SUB:
+                oldindex = db.get_rank(submission.id)
+                if oldindex is None:  # we haven't seen this submission yet
+                    process_submission(submission, index)
+                    db.insert(submission.id, index, int(time.time()))
+                elif oldindex > index:
+                    db.update(submission.id, index, int(time.time()))
+                    webhook = DiscordWebhook(
+                        url=DISCORD_WEBHOOK,
+                        rate_limit_retry=True,
+                        username="nasabot",
+                        content=(
+                            f"Updated /r/all index to {index} for "
+                            f" '[{submission.title}](http://reddit.com{submission.permalink})'"
+                        ),
+                    )
+                    webhook.execute()
+    except prawcore.exceptions.RequestException as error:
+        logging.warning('Exception "%s" trying to get submissions', error )
 
 
 def process_submission(submission, index):

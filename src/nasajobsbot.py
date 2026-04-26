@@ -63,7 +63,7 @@ if __name__ == "__main__":
     except praw.exceptions.RedditAPIException:
         logging.exception("Reddit API Exception")
     except HTTPError as error:
-        logging.exception("HTTPError: %s", error )
+        logging.exception("HTTPError: %s", error)
         system("ntfy -o priority 0 -t 'nasajobs HTTPError' send '" + str(error) + "'")
         sys.exit(0)
     except Exception as error:  # pylint: disable=broad-except
