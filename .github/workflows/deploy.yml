@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
@@ -26,4 +26,3 @@ jobs:
     - name: Run deployment script on remote server
       run: |
         ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} "cd ${{ vars.REPO_PATH }} && ./${{ vars.REMOTE_SCRIPT }}"
-    
