@@ -4,13 +4,13 @@
 import logging
 import sys
 import time
-from os import system
 
 import praw
 import prawcore
 from discord_webhook import DiscordWebhook
 
 from nasautils.utilities import get_sub
+from nasautils.utilities import notify
 
 SUB = get_sub()
 MAX_AGE = 3600 * 24  # 24 hours to allow for modqueue
@@ -73,7 +73,8 @@ def main():
                 logging.exception("Error sending to Discord: %s", str(e))
 
 
-if __name__ == "__main__":
+def cli_main() -> None:
+    """Entry point for console / systemd; handles process exit and notifications."""
     try:
         main()
     except KeyboardInterrupt:
@@ -83,5 +84,9 @@ if __name__ == "__main__":
         sys.exit(2)
     except Exception as error:  # pylint: disable=broad-except
         logging.exception("Unexpected error")
-        system("ntfy -o priority 1 -t 'nasapostbot crashed' send '" + str(error) + "'")
+        notify(str(error), title="nasapostbot crashed", priority=1)
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    cli_main()

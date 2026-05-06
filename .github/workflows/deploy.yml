@@ -1,28 +1,40 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-      - main
+  # Run only after the "Tests" workflow succeeds on a push to main (see job `if` below).
+  workflow_run:
+    workflows:
+      - Tests
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Manual runs always deploy. Automated runs only after Tests succeeded on push to main.
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      || (github.event.workflow_run.conclusion == 'success'
+          && github.event.workflow_run.event == 'push'
+          && github.event.workflow_run.head_branch == 'main')
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Deploy the exact commit that passed Tests; for manual runs use main.
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || 'main' }}
 
-    - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_KEY }}
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
 
-    - name: Pull latest code from remote server
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} "cd ${{ vars.REPO_PATH }} && git pull origin main"
+      - name: Pull latest code from remote server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} "cd ${{ vars.REPO_PATH }} && git pull origin main"
 
-    - name: Run deployment script on remote server
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} "cd ${{ vars.REPO_PATH }} && ./${{ vars.REMOTE_SCRIPT }}"
+      - name: Run deployment script on remote server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} "cd ${{ vars.REPO_PATH }} && ./${{ vars.REMOTE_SCRIPT }}"

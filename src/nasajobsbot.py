@@ -4,13 +4,13 @@
 import logging
 import sys
 from datetime import date
-from os import system
 
 import praw
 import prawcore
 from requests.exceptions import HTTPError
 
 from nasautils.fetch_jobs import fetch_jobs
+from nasautils.utilities import notify
 
 SUB = "nasajobs"
 
@@ -52,7 +52,8 @@ def main():
         logging.info("No jobs found")
 
 
-if __name__ == "__main__":
+def cli_main() -> None:
+    """Entry point for console / systemd; handles process exit and notifications."""
     try:
         main()
     except KeyboardInterrupt:
@@ -64,9 +65,13 @@ if __name__ == "__main__":
         logging.exception("Reddit API Exception")
     except HTTPError as error:
         logging.exception("HTTPError: %s", error)
-        system("ntfy -o priority 0 -t 'nasajobs HTTPError' send '" + str(error) + "'")
+        notify(str(error), title="nasajobs HTTPError", priority=0)
         sys.exit(0)
     except Exception as error:  # pylint: disable=broad-except
         logging.exception("Unexpected error")
-        system("ntfy -o priority 1 -t 'nasajobsbot crashed' send '" + str(error) + "'")
+        notify(str(error), title="nasajobsbot crashed", priority=1)
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    cli_main()

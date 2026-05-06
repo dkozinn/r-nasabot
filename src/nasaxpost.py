@@ -5,12 +5,12 @@
 import logging
 import sys
 import time
-from os import system
 
 import praw
 import praw.exceptions
 import prawcore
 
+from nasautils.utilities import notify
 SUB = "nasa"
 USERSUB = "u_nasa"
 MAX_AGE = 3600  # Don't post if creation >= this long
@@ -88,7 +88,8 @@ def main():
             )
 
 
-if __name__ == "__main__":
+def cli_main() -> None:
+    """Entry point for console / systemd; handles process exit and notifications."""
     try:
         main()
     except KeyboardInterrupt:
@@ -98,5 +99,9 @@ if __name__ == "__main__":
         sys.exit(2)
     except Exception as error:  # pylint: disable=broad-except
         logging.exception("Unexpected error")
-        system("ntfy -o priority 1 -t 'nasaxpost crashed' send '" + str(error) + "'")
+        notify(str(error), title="nasaxpost crashed", priority=1)
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    cli_main()
