@@ -8,8 +8,8 @@ import praw
 import prawcore
 
 
-@pytest.fixture
-def mock_reddit():
+@pytest.fixture(name="mock_reddit")
+def _mock_reddit():
     """Mock Reddit instance with custom config"""
     reddit = MagicMock()
     reddit.config.custom = {
@@ -21,8 +21,8 @@ def mock_reddit():
     return reddit
 
 
-@pytest.fixture
-def mock_subreddit():
+@pytest.fixture(name="mock_subreddit")
+def _mock_subreddit():
     """Mock subreddit instance"""
     subreddit = MagicMock()
     return subreddit

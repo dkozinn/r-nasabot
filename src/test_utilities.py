@@ -18,8 +18,8 @@ def test_get_sub_from_argv():
         assert get_sub() == "foobar"
 
 
-@pytest.fixture
-def no_apprise_config(monkeypatch, tmp_path):
+@pytest.fixture(name="no_apprise_config")
+def _no_apprise_config(monkeypatch, tmp_path):
     monkeypatch.delenv("APPRISE_URL", raising=False)
     monkeypatch.setattr(
         "nasautils.utilities.os.path.expanduser",
@@ -27,12 +27,14 @@ def no_apprise_config(monkeypatch, tmp_path):
     )
 
 
-def test_notify_skips_without_config_or_env(no_apprise_config):
+@pytest.mark.usefixtures("no_apprise_config")
+def test_notify_skips_without_config_or_env():
     with patch("nasautils.utilities.os.path.exists", return_value=False):
         assert notify("hello") is False
 
 
-def test_notify_uses_explicit_url_when_no_config_file(no_apprise_config):
+@pytest.mark.usefixtures("no_apprise_config")
+def test_notify_uses_explicit_url_when_no_config_file():
     with patch("nasautils.utilities.os.path.exists", return_value=False):
         with patch("nasautils.utilities.apprise.Apprise") as mock_cls:
             mock_app = MagicMock()
@@ -50,7 +52,8 @@ def test_notify_uses_explicit_url_when_no_config_file(no_apprise_config):
             assert kwargs["notify_type"] == apprise.common.NotifyType.FAILURE
 
 
-def test_notify_default_title(no_apprise_config):
+@pytest.mark.usefixtures("no_apprise_config")
+def test_notify_default_title():
     with patch("nasautils.utilities.os.path.exists", return_value=False):
         with patch("nasautils.utilities.apprise.Apprise") as mock_cls:
             mock_app = MagicMock()
@@ -62,7 +65,8 @@ def test_notify_default_title(no_apprise_config):
             assert kwargs["title"] == DEFAULT_NOTIFY_TITLE
 
 
-def test_notify_priority_zero_is_info(no_apprise_config):
+@pytest.mark.usefixtures("no_apprise_config")
+def test_notify_priority_zero_is_info():
     with patch("nasautils.utilities.os.path.exists", return_value=False):
         with patch("nasautils.utilities.apprise.Apprise") as mock_cls:
             mock_app = MagicMock()

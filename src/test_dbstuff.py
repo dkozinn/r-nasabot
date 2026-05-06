@@ -6,9 +6,9 @@ import pytest
 from dbstuff import NasaDB
 
 
-@pytest.fixture
-def db():
-    with open("posts.sql") as file:
+@pytest.fixture(name="db")
+def _db():
+    with open("posts.sql", encoding="utf-8") as file:
         script = file.read()
 
     con = sqlite3.connect("/tmp/posts.db")

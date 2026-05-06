@@ -9,8 +9,8 @@ import prawcore.exceptions
 import pytest
 
 
-@pytest.fixture
-def nasabot_ctx():
+@pytest.fixture(name="nasabot_ctx")
+def _nasabot_ctx():
     """Load nasabot with module-level Reddit and DB replaced by mocks."""
     mock_reddit = MagicMock()
     mock_reddit.config.custom = {
