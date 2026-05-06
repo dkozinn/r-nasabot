@@ -23,7 +23,7 @@ def main():
     results = db.fetch_all()
 
     for item in results:
-        print(datetime.fromtimestamp(item[2]).strftime('%Y-%m-%d /home/ubuntu:%M:%S '), end='')
+        print(datetime.fromtimestamp(item[2]).strftime('%Y-%m-%d %H:%M:%S '), end='')
         print(f"Rank={item[1]}: {reddit.submission(id=item[0]).url}")
 
 
