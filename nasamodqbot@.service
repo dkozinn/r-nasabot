@@ -7,7 +7,7 @@ StartLimitIntervalSec=7200
 [Service]
 Type=simple
 ExecStart=#WHICHPYTHON# /usr/local/bin/nasamodqbot.py %I
-ExecStopPost=/usr/local/bin/apprise -c "%h/.config/apprise" -n failure -t "nasamodqbot failed for %I" -b "Service Result=${SERVICE_RESULT}, Exit Code=${EXIT_CODE}, Exit Status=${EXIT_STATUS}"
+ExecStopPost=/usr/local/bin/apprise -c "/home/ubuntu/.config/apprise" -n failure -t "nasamodqbot failed for %I" -b "Service Result=${SERVICE_RESULT}, Exit Code=${EXIT_CODE}, Exit Status=${EXIT_STATUS}"
 RestartSec=600
 Restart=always
 User=#USER#
