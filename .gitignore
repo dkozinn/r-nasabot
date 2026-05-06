@@ -204,6 +204,6 @@ local.notes
 **/approve*.py
 .ignore
 .vscode
-test*.py
+test-*.py
 .DS_Store
 pause_xpost
