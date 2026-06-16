@@ -51,7 +51,7 @@ def main():
             or time.time() - submission.created_utc > MAX_AGE
         ):
             reddit_url = "https://reddit.com" + submission.permalink
-            logging.warning(
+            logging.info(
                 "Did not re-crosspost '%s' from %s at %s created on %s",
                 submission.title,
                 submission.author,
