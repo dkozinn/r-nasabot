@@ -6,7 +6,8 @@ import sys
 from datetime import date
 
 import praw
-import prawcore
+from prawcore.exceptions import ServerError, ResponseException
+from praw.exceptions import RedditAPIException
 from requests.exceptions import HTTPError
 
 from nasautils.fetch_jobs import fetch_jobs
@@ -19,8 +20,8 @@ def main():
     """Main loop"""
 
     reddit = praw.Reddit("nasajobsbot", user_agent="r-nasajobsbot:v1.00 (by /u/dkozinn)")
-    app_debug_level = reddit.config.custom["app_debugging"].upper()
-    praw_debug_level = reddit.config.custom["praw_debugging"].upper()
+    app_debug_level = reddit.config.custom["app_debugging"].upper() # type: ignore
+    praw_debug_level = reddit.config.custom["praw_debugging"].upper()   # type: ignore
     logging.basicConfig(
         level=app_debug_level,
         filename="/var/log/nasabot.log",
@@ -37,7 +38,7 @@ def main():
     subreddit = reddit.subreddit(SUB)
     logging.info("Entering main loop")
     results = fetch_jobs(
-        reddit.config.custom["jobs_email"], reddit.config.custom["jobs_key"]
+        reddit.config.custom["jobs_email"], reddit.config.custom["jobs_key"]    #type: ignore
     )
     if len(results) > 0:
         subreddit.submit(
@@ -58,10 +59,10 @@ def cli_main() -> None:
         main()
     except KeyboardInterrupt:
         sys.exit(0)
-    except (prawcore.exceptions.ServerError, prawcore.exceptions.ResponseException):
+    except (ServerError, ResponseException):
         logging.exception("Reddit error")
         sys.exit(2)
-    except praw.exceptions.RedditAPIException:
+    except RedditAPIException:
         logging.exception("Reddit API Exception")
     except HTTPError as error:
         logging.exception("HTTPError: %s", error)
