@@ -1,6 +1,6 @@
 apprise>=1.0.0
 discord_webhook>=1.3.0
-praw>=7.7.1
+praw>=8.0.1
 prawcore>=4.0.0
-pytest>=8.0.1
+pytest>=9.0.3
 Requests>=2.32.0
