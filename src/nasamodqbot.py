@@ -6,7 +6,7 @@ import logging
 import sys
 
 import praw
-import prawcore
+from prawcore.exceptions import ServerError, ResponseException
 from discord_webhook import DiscordWebhook
 
 from nasautils.utilities import get_sub
@@ -21,8 +21,8 @@ def main() -> None:
     reddit = praw.Reddit(
         "nasamodqbot", user_agent="r-nasamodqbot:v1.01 (by /u/dkozinn)"
     )
-    app_debug_level = reddit.config.custom["app_debugging"].upper()
-    praw_debug_level = reddit.config.custom["praw_debugging"].upper()
+    app_debug_level = reddit.config.custom["app_debugging"].upper() # type: ignore
+    praw_debug_level = reddit.config.custom["praw_debugging"].upper() # type: ignore
     discord_webhook = reddit.config.custom["discord_webhook"]
 
     logging.basicConfig(
@@ -59,7 +59,7 @@ def main() -> None:
         )
         try:
             webhook = DiscordWebhook(
-                url=discord_webhook,
+                url=discord_webhook,    # type: ignore
                 rate_limit_retry=True,
                 username="Modqueue",
                 content=(
@@ -79,7 +79,7 @@ def cli_main() -> None:
         main()
     except KeyboardInterrupt:
         sys.exit(0)
-    except (prawcore.exceptions.ServerError, prawcore.exceptions.ResponseException):
+    except (ServerError, ResponseException):
         logging.exception("Reddit error")
         sys.exit(2)
     except Exception as error:  # pylint: disable=broad-except

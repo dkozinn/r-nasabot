@@ -7,8 +7,8 @@ import time
 from pathlib import Path
 
 import praw
-import praw.exceptions
-import prawcore.exceptions
+from praw.exceptions import PRAWException
+from prawcore.exceptions import RequestException
 from discord_webhook import DiscordWebhook
 
 import dbstuff
@@ -31,8 +31,8 @@ FLAIR_TEMPLATE_ID = "7216c708-7c40-11e4-b13d-12313d052165"
 reddit = praw.Reddit("nasabot", user_agent="r-nasabot:v1.00 (by /u/dkozinn)")
 DISCORD_WEBHOOK = reddit.config.custom["discord_webhook"]
 DISCORD_MOD_ID = reddit.config.custom["discord_mod_id"]
-app_debug_level = reddit.config.custom["app_debugging"].upper()
-praw_debug_level = reddit.config.custom["praw_debugging"].upper()
+app_debug_level = reddit.config.custom["app_debugging"].upper()  # type: ignore
+praw_debug_level = reddit.config.custom["praw_debugging"].upper()  # type: ignore
 
 
 def main():
@@ -73,7 +73,7 @@ def main():
                 elif oldindex > index:
                     db.update(submission.id, index, int(time.time()))
                     webhook = DiscordWebhook(
-                        url=DISCORD_WEBHOOK,
+                        url=DISCORD_WEBHOOK,  # type: ignore
                         rate_limit_retry=True,
                         username="nasabot",
                         content=(
@@ -82,7 +82,7 @@ def main():
                         ),
                     )
                     webhook.execute()
-    except prawcore.exceptions.RequestException as error:
+    except RequestException as error:
         logging.warning('Exception "%s" trying to get submissions', error )
 
 
@@ -103,7 +103,7 @@ def process_submission(submission, index):
         comment.disable_inbox_replies()
         submission.mod.flair(flair_template_id=FLAIR_TEMPLATE_ID, text="/r/all")
         webhook = DiscordWebhook(
-            url=DISCORD_WEBHOOK,
+            url=DISCORD_WEBHOOK,  # type: ignore
             rate_limit_retry=True,
             username="nasabot",
             content=(
@@ -114,7 +114,7 @@ def process_submission(submission, index):
         )
         webhook.execute()
 
-    except praw.exceptions.PRAWException as error:
+    except PRAWException as error:
         logging.warning(
             'Exception "%s" for id %s with title %s',
             error,

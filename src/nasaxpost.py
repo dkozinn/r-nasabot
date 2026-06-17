@@ -7,8 +7,8 @@ import sys
 import time
 
 import praw
-import praw.exceptions
-import prawcore
+from praw.exceptions import RedditAPIException
+from prawcore.exceptions import ServerError, ResponseException
 
 from nasautils.utilities import notify
 SUB = "nasa"
@@ -21,8 +21,8 @@ def main():
 
     # Use the same credentials as nasapostbot
     reddit = praw.Reddit("nasapostbot", user_agent="r-nasaxpost:v1.01 (by /u/dkozinn)")
-    app_debug_level = reddit.config.custom["app_debugging"].upper()
-    praw_debug_level = reddit.config.custom["praw_debugging"].upper()
+    app_debug_level = reddit.config.custom["app_debugging"].upper()  # type: ignore
+    praw_debug_level = reddit.config.custom["praw_debugging"].upper()  # type: ignore
 
     logging.basicConfig(
         level=app_debug_level,
@@ -44,9 +44,7 @@ def main():
         # Don't crosspost if post was already crossposted from r/nasa or is too old
         if (
             hasattr(submission, "crosspost_parent")
-            and reddit.submission(
-                reddit.submission(submission.crosspost_parent.split("_")[1])
-            ).subreddit
+            and reddit.submission(submission.crosspost_parent.split("_")[1]).subreddit
             == "nasa"
             or time.time() - submission.created_utc > MAX_AGE
         ):
@@ -65,7 +63,7 @@ def main():
                     flair_id="0f2362b2-7fae-11e3-bed4-22000aa47206",
                     send_replies=False,
                 )
-            except praw.exceptions.RedditAPIException as exception:
+            except RedditAPIException as exception:
                 xpost_error = False
                 for subexception in exception.items:
                     if subexception.error_type == "INVALID_CROSSPOST_THING":
@@ -94,7 +92,7 @@ def cli_main() -> None:
         main()
     except KeyboardInterrupt:
         sys.exit(0)
-    except (prawcore.exceptions.ServerError, prawcore.exceptions.ResponseException):
+    except (ServerError, ResponseException):
         logging.exception("Reddit error")
         sys.exit(2)
     except Exception as error:  # pylint: disable=broad-except
