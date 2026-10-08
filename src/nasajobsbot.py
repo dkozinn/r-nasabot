@@ -19,9 +19,11 @@ SUB = "nasajobs"
 def main():
     """Main loop"""
 
-    reddit = praw.Reddit("nasajobsbot", user_agent="r-nasajobsbot:v1.00 (by /u/dkozinn)")
-    app_debug_level = reddit.config.custom["app_debugging"].upper() # type: ignore
-    praw_debug_level = reddit.config.custom["praw_debugging"].upper()   # type: ignore
+    reddit = praw.Reddit(
+        "nasajobsbot", user_agent="r-nasajobsbot:v1.00 (by /u/dkozinn)"
+    )
+    app_debug_level = reddit.config.custom["app_debugging"].upper()  # type: ignore
+    praw_debug_level = reddit.config.custom["praw_debugging"].upper()  # type: ignore
     logging.basicConfig(
         level=app_debug_level,
         filename="/var/log/nasabot.log",
@@ -38,7 +40,8 @@ def main():
     subreddit = reddit.subreddit(SUB)
     logging.info("Entering main loop")
     results = fetch_jobs(
-        reddit.config.custom["jobs_email"], reddit.config.custom["jobs_key"]    #type: ignore
+        reddit.config.custom["jobs_email"],  # type: ignore
+        reddit.config.custom["jobs_key"],  # type: ignore
     )
     if len(results) > 0:
         subreddit.submit(
